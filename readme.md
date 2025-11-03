@@ -1,96 +1,80 @@
 
 # 🌬️ Asthma Manager (Full Stack)
 
-This repository contains the **full-stack code** for a mobile health application focused on **personalized asthma management**.
-The project enables **real-time data capture**, **treatment guidance**, and **doctor-patient collaboration**, as detailed in the project documentation.
+This repository contains the **full-stack code** for a mobile health application focused on **personalized asthma management**.  
+The project is designed for **real-time data capture**, **treatment guidance**, and **doctor-patient collaboration**, as specified in the project documentation.
 
----
+
 
 ## 🧩 Project Structure
 
-The project is divided into two main components:
+The project is split into two main components:
 
-```
-AsthmaManager2/
-├── app/                # Android Frontend (Kotlin)
-└── asthma-backend/     # Python Backend (FastAPI)
-```
+- **`app/` (Android Frontend)** — A native Android application built in Android Studio with **Kotlin**, **XML**, and modern **AndroidX** libraries.  
+- **`asthma-backend/` (Python Backend)** — A secure RESTful API built with **Python** and the **FastAPI** framework to handle all data, logic, and user authentication.
 
-* **Frontend (Android App)** – built using Kotlin, XML, and AndroidX libraries.
-* **Backend (Python API)** – built using FastAPI, SQLAlchemy, and JWT-based authentication.
 
----
 
-## 📱 1. Frontend (Android App)
+## 🖥️ 1. Frontend (Android App)
 
-The Android application serves as the **primary interface** for both **patients** and **doctors**.
+The Android application serves as the **primary interface** for both patients and doctors.
 
-### ✅ Frontend Status
+### ✅ Frontend Status: COMPLETE
 
-**COMPLETE**
+- **UI/UX:** All 15+ screens are fully built with XML and styled with a consistent dark teal theme matching the design specifications.  
+- **Navigation:** A complete navigation graph (`nav_graph.xml`) connects all fragments, enabling full interactive flow.  
+- **Logic:** All fragment `.kt` files follow the correct **ViewBinding** pattern with working click listeners.  
+- **Features:** Advanced UI components like **MPAndroidChart** (for graphs) and **RecyclerView** (for patient/alert lists) are implemented with sample data.  
 
-* **UI/UX:** All 15+ screens are fully designed in XML with a consistent **dark teal theme** matching the provided design specs.
-* **Navigation:** A complete `nav_graph.xml` connects all fragments for a fully interactive prototype.
-* **Logic:** Each fragment `.kt` file uses **ViewBinding** and **click listeners** for navigation.
-* **Features:** Includes advanced UI elements such as:
 
-  * `MPAndroidChart` for graphs and visual trends.
-  * `RecyclerView` for lists (patients, alerts, etc.) with sample data.
-
----
 
 ## ⚙️ 2. Backend (Python API)
 
-The backend handles all **business logic**, **data persistence**, and **security**.
+The backend handles **business logic**, **data persistence**, and **security** for the application.
 
-### 🚧 Backend Status
+### ⚠️ Backend Status: NOT STARTED
 
-**NOT STARTED** (Structure created)
+The folder `asthma-backend/` includes **empty placeholder files**:  
+`main.py`, `database.py`, `models.py`, `schemas.py`, and `auth.py`.
 
-The folder `asthma-backend/` includes empty placeholder files:
+The following setup guide details how to build and run this server from scratch.
 
-```
-main.py
-database.py
-models.py
-schemas.py
-auth.py
-```
 
-### 🔧 Technology Stack
 
-| Layer        | Technology / Tools                                                             |
-| ------------ | ------------------------------------------------------------------------------ |
+## 🧠 Technology Stack
+
+| Component | Technologies |
+|------------|---------------|
 | **Frontend** | Kotlin, XML, Android Studio, ViewBinding, Navigation Component, MPAndroidChart |
-| **Backend**  | Python 3.10+, FastAPI, SQLAlchemy, Bcrypt, Python-JOSE (JWT)                   |
-| **Database** | SQLite (Development), PostgreSQL (Production)                                  |
+| **Backend** | Python 3.10+, FastAPI, SQLAlchemy, Bcrypt, Python-JOSE (JWT) |
+| **Database** | SQLite (for development), PostgreSQL (for production) |
 
 ---
 
-## 🚀 How to Set Up and Run the Project
+## 🚀 How to Set Up and Run This Project
 
-Follow these steps **from base to end** to get the full application running locally.
+Follow these steps **from start to finish** to run the full application locally.
 
----
+]
 
-### 🧠 Part 1: Backend Setup (in Visual Studio Code)
+### 🧰 Part 1: Backend Setup (in Visual Studio Code)
 
-We recommend **VS Code** for backend development since Android Studio doesn’t support Python.
+We recommend using **VS Code** for the Python backend, since Android Studio is not designed for Python development.
 
-#### 1. Open the Backend Folder
+#### 1️⃣ Open the Backend Folder
 
-* In VS Code, go to **File → Open Folder...**
-* Select the `asthma-backend` directory.
+In VS Code:  
+**File → Open Folder...** and select the **`asthma-backend`** directory.
 
-#### 2. Set Up the Environment
+#### 2️⃣ Set Up the Environment
 
-Open a new terminal in VS Code (**Terminal → New Terminal**) and run:
+Open a terminal (**Terminal → New Terminal**) and run:
 
 ```bash
 python -m venv venv
-```
+````
 
-Activate the environment:
+Activate the virtual environment:
 
 ```bash
 .\venv\Scripts\Activate.ps1
@@ -98,162 +82,153 @@ Activate the environment:
 
 (Your terminal prompt should now show `(venv)`)
 
-#### 3. Install Dependencies
-
-Install all required Python libraries:
+#### 3️⃣ Install Dependencies
 
 ```bash
 pip install "fastapi[all]" sqlalchemy "passlib[bcrypt]" "python-jose[cryptography]"
 ```
 
-#### 4. Populate the Python Files
+#### 4️⃣ Populate the Python Files
 
-Each file in `asthma-backend/` should be populated as follows:
+You must populate these files with the following logic:
 
-| File          | Description                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------- |
-| `database.py` | Connects to the SQLite database.                                                                  |
-| `models.py`   | SQLAlchemy ORM models (Users, PEFRReadings, Symptoms, etc.).                                      |
-| `schemas.py`  | Pydantic models for requests/responses (`UserCreate`, `Token`, etc.).                             |
-| `auth.py`     | Handles password hashing (bcrypt) and JWT token creation/verification.                            |
-| `main.py`     | Defines the FastAPI app and all endpoints (`/auth/signup`, `/auth/login`, `/patient/pefr`, etc.). |
+| File              | Purpose                                                                                             |
+| ----------------- | --------------------------------------------------------------------------------------------------- |
+| **`database.py`** | Database connection and session handling (SQLite / PostgreSQL).                                     |
+| **`models.py`**   | SQLAlchemy classes defining tables such as `Users`, `PEFRReadings`, and `Symptoms`.                 |
+| **`schemas.py`**  | Pydantic models for request and response data (e.g., `UserCreate`, `Token`).                        |
+| **`auth.py`**     | Authentication logic including bcrypt password hashing and JWT handling.                            |
+| **`main.py`**     | The main FastAPI app registering all routes (e.g., `/auth/signup`, `/auth/login`, `/patient/pefr`). |
 
-#### 5. Run the Backend Server
+#### 5️⃣ Run the Backend Server
+
+Once populated, start the server:
 
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --host 0.0.0.0
 ```
 
-This will:
+A new file **`asthma.db`** will be created automatically.
 
-* Start your backend server at `http://127.0.0.1:8000`
-* Create a local database file named `asthma.db`
-* Expose live API docs at:
-  👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+Access the API docs at:
+👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
 
-### 📲 Part 2: Frontend Setup (in Android Studio)
+### 📱 Part 2: Frontend Setup (in Android Studio)
 
-#### 1. Open the Project
+#### 1️⃣ Open the Project
 
-* In Android Studio, go to **File → Open...**
-* Select the root folder `AsthmaManager2`.
+In Android Studio:
+**File → Open...** and select the **root `AsthmaManager2` folder**.
 
-#### 2. Sync Gradle
+#### 2️⃣ Sync Gradle
 
-* Wait for Gradle to sync all dependencies from `build.gradle.kts`.
+Wait for Gradle to download and sync all dependencies listed in `build.gradle.kts`.
 
-#### 3. Fix Icons (One-Time Step)
+#### 3️⃣ Check Icons (One-Time Fix)
 
-The icon files `ic_cough.png` and `ic_dyspnea.png` are corrupt.
+Some icons (`ic_cough.png`, `ic_dyspnea.png`) are corrupted.
+Replace them:
 
-Fix them by:
+* Delete the broken files from `res/drawable`.
+* Right-click **res/drawable → New → Vector Asset**.
+* Import new icons (e.g., search “sick” and “compress”).
 
-1. Deleting them from `res/drawable`
-2. Right-click `res/drawable` → **New → Vector Asset**
-3. Import replacements (search “sick” and “compress” icons).
+#### 4️⃣ Run the App
 
-#### 4. Run the App
-
-* Create an Android Virtual Device (AVD) via **Device Manager**
+* Create an Android Virtual Device (AVD) using **Device Manager**.
 * Click the **Run (▶)** button to build and launch the app on the emulator.
 
 ---
 
-### 🌐 Part 3: Connecting Frontend to Backend
+### 🌐 Part 3: Connecting Frontend to Backend ✅ *(Updated & Working)*
 
-To make the Android app communicate with your running FastAPI server:
+This step ensures the Android app communicates successfully with your local FastAPI backend.
 
-#### 1. Find Your Local IP Address
+#### 1️⃣ Do NOT use your local IP manually
 
-Open a terminal (on Windows):
+The Android Emulator provides a special alias — **`10.0.2.2`** — that points directly to your computer’s **localhost**.
+This eliminates the need to find your IPv4 address manually.
+
+#### 2️⃣ Verify Backend is Running
+
+In VS Code, make sure the backend is running with:
 
 ```bash
-ipconfig
+uvicorn main:app --reload --host 0.0.0.0
 ```
 
-Locate your **IPv4 Address**, e.g. `192.168.1.10`.
+#### 3️⃣ Configure Android Networking
 
-> ⚠️ Note: The Android Emulator cannot access `127.0.0.1`.
-> You must use your **local network IP** instead.
+Open this file in your Android Studio project:
 
-#### 2. Create a Retrofit Instance
+```
+app/src/main/java/com/example/asthmamanager/network/RetrofitClient.kt
+```
 
-In your Android app’s Kotlin code, create a new file:
-`RetrofitInstance.kt` under your networking package.
+Set the `BASE_URL` constant to:
 
 ```kotlin
-package com.example.asthmamanager.network
-
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-
-object RetrofitInstance {
-    private const val BASE_URL = "http://192.168.1.10:8000/"
-
-    val api: ApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
-    }
-}
+const val BASE_URL = "http://10.0.2.2:8000/"
 ```
 
-Replace the `BASE_URL` IP with your own **IPv4 Address**.
+This automatically routes emulator traffic to your backend.
 
-#### 3. Define Your API Interface
+#### 4️⃣ Enable HTTP (Non-HTTPS) Connections
 
-Example `ApiService.kt`:
+In your `AndroidManifest.xml`, inside the `<application>` tag, add:
 
-```kotlin
-package com.example.asthmamanager.network
-
-import retrofit2.http.Body
-import retrofit2.http.POST
-
-data class LoginRequest(val username: String, val password: String)
-data class LoginResponse(val access_token: String, val token_type: String)
-
-interface ApiService {
-    @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): LoginResponse
-}
+```xml
+<application
+    android:name=".MyApplication"
+    android:usesCleartextTraffic="true"
+    ...>
 ```
 
-#### 4. Test the Connection
+This allows the app to connect to `http://` URLs in local development.
 
-* Ensure your backend is running with `uvicorn main:app --reload`
-* Run your Android app in the emulator.
-* Try signing up or logging in — data should now flow between the **app** and the **backend**.
+#### 5️⃣ Run Both Together
 
----
+1. **Backend:** Keep `uvicorn` running in VS Code.
+2. **Frontend:** Click **Run (▶)** in Android Studio to start the app on the emulator.
 
-## ✅ Summary
+You can now:
 
-| Component          | Status               | Key Tools                   |
-| ------------------ | -------------------- | --------------------------- |
-| **Android App**    | ✅ Complete           | Kotlin, XML, MPAndroidChart |
-| **Python Backend** | ⚙️ To Be Developed   | FastAPI, SQLAlchemy, JWT    |
-| **Integration**    | 🔗 Ready for Testing | Retrofit (Kotlin) + FastAPI |
+* 🧍 Sign Up for a new account
+* 🔐 Log In securely
+* 📈 Record and fetch data from your **live FastAPI backend**
 
 ---
 
-## 💡 Next Steps
+## 📊 Project Status Summary
 
-* Implement backend logic in each Python file.
-* Deploy backend to a cloud provider (e.g., Render, Railway, or GCP).
-* Add persistent storage via PostgreSQL in production.
-* Secure API endpoints and enable token-based access in the Android client.
-
----
-
-## 📚 License
-
-This project is licensed under the **MIT License**.
-Feel free to modify and use for educational or research purposes.
+| Component              | Status     | Description                                                                     |
+| ---------------------- | ---------- | ------------------------------------------------------------------------------- |
+| **Frontend (Android)** | ✅ Complete | 15+ screens, navigation, charts, RecyclerViews, and dark-teal theme implemented |
+| **Backend (FastAPI)**  | ⚙️ Pending | Folder structure ready with placeholders; setup instructions included           |
 
 ---
 
+## 🧾 API Preview
+
+Once built, visit:
+👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+to view and test endpoints through **FastAPI’s Swagger UI**.
+
+---
+
+## 🏁 Final Notes
+
+* Use `10.0.2.2` instead of `127.0.0.1` inside the Android Emulator.
+* Always start the backend before launching the Android app.
+* The backend automatically generates `asthma.db` (SQLite) for development.
+* For production, switch to **PostgreSQL** in your `database.py` configuration.
+
+---
+
+**💡 Developed with care for better breathing — one line of code at a time.**
+
+```
+
+\
