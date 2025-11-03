@@ -30,15 +30,18 @@ class SignupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonSignup.setOnClickListener {
+            // --- FIX: Read all required fields ---
+            val name = binding.editTextName.text.toString().trim() // Read new name field
             val email = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString().trim()
             val confirmPassword = binding.editTextConfirmPassword.text.toString().trim()
             val role = binding.spinnerRole.selectedItem.toString()
 
-            if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) { // Check name
                 Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            // --- END FIX ---
 
             if (password != confirmPassword) {
                 Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show()
@@ -50,14 +53,25 @@ class SignupFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val signupRequest = SignupRequest(email = email, password = password, role = role)
+            // --- FIX: Pass the 'fullName' to the request ---
+            val signupRequest = SignupRequest(
+                email = email,
+                password = password,
+                role = role,
+                fullName = name // Add name here
+            )
+            // --- END FIX ---
 
             lifecycleScope.launch {
                 try {
                     val response = RetrofitClient.apiService.signup(signupRequest)
 
                     if (response.isSuccessful) {
-                        findNavController().navigate(SignupFragmentDirections.actionSignupFragmentToPatientDetailsFragment())
+                        // --- FIX: Navigate to Login after successful signup ---
+                        // The user MUST log in to get a token.
+                        Toast.makeText(requireContext(), "Signup successful. Please log in.", Toast.LENGTH_LONG).show()
+                        findNavController().navigate(SignupFragmentDirections.actionSignupFragmentToLoginFragment())
+                        // --- END FIX ---
                     } else {
                         Toast.makeText(requireContext(), "Signup failed. Please try again.", Toast.LENGTH_LONG).show()
                     }

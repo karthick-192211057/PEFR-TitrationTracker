@@ -7,6 +7,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
+from typing import Optional # <-- THIS LINE WAS ADDED
 
 import database, models, schemas  # <-- CORRECTED IMPORT
 

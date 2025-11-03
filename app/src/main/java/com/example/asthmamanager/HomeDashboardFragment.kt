@@ -62,28 +62,64 @@ class HomeDashboardFragment : Fragment() {
         }
 
         fetchDashboardData()
-        logSymptoms()
+        // logSymptoms() // <-- This should only be called on a button press, not on startup.
     }
 
     private fun fetchDashboardData() {
+        // --- FIX: Show loading, hide content & error ---
+        binding.progressBar.visibility = View.VISIBLE
+        binding.textViewError.visibility = View.GONE
+        binding.contentScrollView.visibility = View.INVISIBLE
+        // --- END FIX ---
+
         lifecycleScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
                     RetrofitClient.apiService.getMyProfile()
                 }
+
+                // --- FIX: Hide loading ---
+                binding.progressBar.visibility = View.GONE
+                // --- END FIX ---
+
                 if (response.isSuccessful) {
                     val user = response.body()
                     user?.let {
-                        binding.textViewHeader.text = "Welcome, ${it.fullName}"
-                        it.baseline?.let {
-                            binding.textBaselinePEFRValue.text = it.baselineValue.toString()
-                            setupChart(it.baselineValue)
-                            updateTreatmentNotification(450, it.baselineValue) // Using a sample value for now
+                        // --- FIX: Show content ---
+                        binding.contentScrollView.visibility = View.VISIBLE
+                        // --- END FIX ---
+
+                        binding.textViewHeader.text = "Welcome, ${it.fullName}" // Using simple string concatenation
+                        it.baseline?.let { baseline ->
+                            // --- FIX: Set the correct TextView ID ---
+                            binding.textBaselinePEFRValue.text = baseline.baselineValue.toString()
+                            // --- END FIX ---
+                            setupChart(baseline.baselineValue)
+                            updateTreatmentNotification(450, baseline.baselineValue) // Using a sample value
+                        } ?: run {
+                            // Handle case where user has no baseline set
+                            binding.textBaselinePEFRValue.text = "N/A"
+                            // You could add a click listener to textBaselinePEFRValue
+                            // to navigate to the profile to set it.
                         }
+                    } ?: run {
+                        // --- FIX: Handle successful but empty response ---
+                        binding.textViewError.text = "Could not retrieve user profile."
+                        binding.textViewError.visibility = View.VISIBLE
+                        // --- END FIX ---
                     }
+                } else {
+                    // --- FIX: Handle API error (e.g., 404, 500) ---
+                    binding.textViewError.text = "Error: ${response.message()}"
+                    binding.textViewError.visibility = View.VISIBLE
+                    // --- END FIX ---
                 }
             } catch (e: Exception) {
-                // Handle error
+                // --- FIX: Handle network failure (e.g., no internet) ---
+                binding.progressBar.visibility = View.GONE
+                binding.textViewError.text = "Network error. Please check your connection."
+                binding.textViewError.visibility = View.VISIBLE
+                // --- END FIX ---
             }
         }
     }
@@ -191,12 +227,13 @@ class HomeDashboardFragment : Fragment() {
             "Green Zone" -> "Continue the inhaler - Controller"
             "Yellow Zone" -> "Step up dose / Use reliever"
             "Red Zone" -> "Emergency hospital visit"
-            else -> ""
+            else -> "Set baseline in profile"
         }
         binding.textZoneGuidance.text = advice
     }
 
     private fun getPEFRZone(pefrValue: Int, baselinePefr: Int): String {
+        if (baselinePefr == 0) return "Unknown Zone" // Prevent division by zero
         val percentage = (pefrValue.toFloat() / baselinePefr) * 100
         return when {
             percentage >= 80 -> "Green Zone"
@@ -206,10 +243,12 @@ class HomeDashboardFragment : Fragment() {
     }
 
     private fun logSymptoms() {
+        // --- FIX: Use correct RatingBar IDs from XML ---
         val wheezeRating = binding.ratingWheeze.rating.toInt()
         val coughRating = binding.ratingCough.rating.toInt()
         val dyspneaRating = binding.ratingDyspnea.rating.toInt()
         val nightSymptomsRating = binding.ratingNightSymptoms.rating.toInt()
+        // --- END FIX ---
 
         val symptomRequest = SymptomCreate(
             wheezeRating = wheezeRating,
@@ -229,8 +268,11 @@ class HomeDashboardFragment : Fragment() {
                 withContext(Dispatchers.IO) {
                     RetrofitClient.apiService.recordSymptom(symptomRequest)
                 }
+                // Optionally show a Toast confirmation
+                // Toast.makeText(requireContext(), "Symptoms logged", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 // Handle error
+                Toast.makeText(requireContext(), "Could not log symptoms", Toast.LENGTH_SHORT).show()
             }
         }
     }

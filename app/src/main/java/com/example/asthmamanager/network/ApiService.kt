@@ -22,6 +22,9 @@ interface ApiService {
     @GET("/profile/me")
     suspend fun getMyProfile(): Response<User>
 
+    @PUT("/profile/me")
+    suspend fun updateMyProfile(@Body profileUpdateRequest: SignupRequest): Response<User>
+
     @POST("/patient/baseline")
     suspend fun setBaseline(
         @Body baselineRequest: BaselinePEFRCreate
