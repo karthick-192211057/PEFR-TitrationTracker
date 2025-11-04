@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 // Note the binding class name: FragmentTreatmentPlanBinding
@@ -25,10 +26,17 @@ class TreatmentPlanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Navigate back
+        // --- FIX: Set the Activity's toolbar title ---
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Your Treatment Plan"
+        // --- END FIX ---
+
+        // --- FIX: This block was removed ---
+        /*
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
+        */
+        // --- END FIX ---
 
         binding.buttonViewPrescription.setOnClickListener {
             // Placeholder: This would launch a detailed prescription view

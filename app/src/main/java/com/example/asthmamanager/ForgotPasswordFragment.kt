@@ -35,8 +35,7 @@ class ForgotPasswordFragment : Fragment() {
         }
 
         // Navigate to Reset Password
-        binding.buttonSubmit.setOnClickListener {
-            findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToResetPasswordFragment())
+        binding.buttonSubmit.setOnClickListener { findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToResetPasswordFragment())
         }
     }
 

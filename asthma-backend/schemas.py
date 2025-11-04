@@ -179,6 +179,21 @@ class Symptom(SymptomCreate):
     class Config(ConfigBase):
         pass
 
-# --- THIS IS THE FIX ---
 # This line allows the User schema to find the BaselinePEFR schema
 User.update_forward_refs()
+
+
+# --- [START] NEW DOCTOR-PATIENT LINK SCHEMAS ---
+
+class DoctorPatientLinkCreate(BaseModel):
+    doctor_email: EmailStr
+
+class DoctorPatientLink(BaseModel):
+    id: int
+    doctor_id: int
+    patient_id: int
+
+    class Config(ConfigBase):
+        pass
+
+# --- [END] NEW DOCTOR-PATIENT LINK SCHEMAS ---

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 // Note the binding class name: FragmentSymptomTrackerBinding
@@ -25,10 +26,18 @@ class SymptomTrackerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Navigate back
+        // --- FIX: Set the Activity's toolbar title ---
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Symptom Tracker"
+        // --- END FIX ---
+
+        // --- FIX: This block was removed ---
+        /*
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
+        */
+        // --- END FIX ---
+
 
         // Placeholder: Logic to read the rating bars and checkboxes would go here.
         // There is no explicit button to submit on this page, as it was integrated into the Home screen.

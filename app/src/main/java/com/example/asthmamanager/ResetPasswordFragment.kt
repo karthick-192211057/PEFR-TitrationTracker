@@ -24,10 +24,13 @@ class ResetPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Handle Back Button
+        // --- FIX: This block was removed ---
+        /*
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
+        */
+        // --- END FIX ---
 
         // Handle Submit Button (Navigate back to Login)
         binding.buttonSubmit.setOnClickListener {

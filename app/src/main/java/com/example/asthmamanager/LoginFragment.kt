@@ -58,11 +58,13 @@ class LoginFragment : Fragment() {
 
                         SessionManager(requireContext()).saveAuthToken(tokenResponse.accessToken)
 
-                        if (tokenResponse.userRole == "Doctor") {
+                        // --- THIS IS THE FIX ---
+                        if (tokenResponse.userRole.equals("Doctor", ignoreCase = true)) {
                             findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDoctorDashboardFragment())
                         } else {
                             findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHomeDashboardFragment())
                         }
+                        // --- END FIX ---
 
                     } else {
                         Toast.makeText(requireContext(), "Login failed. Check credentials.", Toast.LENGTH_LONG).show()

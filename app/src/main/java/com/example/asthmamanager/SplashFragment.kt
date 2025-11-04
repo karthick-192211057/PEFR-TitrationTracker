@@ -48,11 +48,13 @@ class SplashFragment : Fragment() {
                         }
                         if (response.isSuccessful) {
                             val user = response.body()
-                            if (user?.role == "Doctor") {
+                            // --- THIS IS THE FIX ---
+                            if (user?.role.equals("Doctor", ignoreCase = true)) {
                                 findNavController().navigate(SplashFragmentDirections.actionSplashFragmentToDoctorDashboardFragment())
                             } else {
                                 findNavController().navigate(SplashFragmentDirections.actionSplashFragmentToHomeDashboardFragment())
                             }
+                            // --- END FIX ---
                         } else {
                             // If the token is invalid, go to login
                             findNavController().navigate(SplashFragmentDirections.actionSplashFragmentToLoginFragment())

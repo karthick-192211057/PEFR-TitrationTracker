@@ -28,7 +28,7 @@ interface ApiService {
     @POST("/patient/baseline")
     suspend fun setBaseline(
         @Body baselineRequest: BaselinePEFRCreate
-    ): Response<BaselinePEFR> 
+    ): Response<BaselinePEFR>
 
     // --- PEFR & Symptoms (Requires Auth) ---
     @POST("/pefr/record")
@@ -58,7 +58,7 @@ interface ApiService {
     suspend fun createEmergencyContact(
         @Body contactRequest: EmergencyContactCreate
     ): Response<EmergencyContact>
-    
+
     // --- Reminders (Requires Auth) ---
     @GET("/reminders")
     suspend fun getReminders(): Response<List<Reminder>>
@@ -74,4 +74,24 @@ interface ApiService {
         @Query("search") search: String?,
         @Query("zone") zone: String?
     ): Response<List<User>>
+
+    // --- [START] NEW FUNCTION TO LINK PATIENT TO DOCTOR ---
+    @POST("/patient/link-doctor")
+    suspend fun linkDoctor(
+        @Body linkRequest: DoctorPatientLinkRequest
+    ): Response<DoctorPatientLink>
+    // --- [END] NEW FUNCTION TO LINK PATIENT TO DOCTOR ---
+
+
+    // --- [START] NEW DOCTOR FUNCTIONS ---
+    @GET("/patient/{patient_id}/pefr")
+    suspend fun getPatientPefrRecords(
+        @Path("patient_id") patientId: Int
+    ): Response<List<PEFRRecord>>
+
+    @GET("/patient/{patient_id}/symptoms")
+    suspend fun getPatientSymptomRecords(
+        @Path("patient_id") patientId: Int
+    ): Response<List<Symptom>>
+    // --- [END] NEW DOCTOR FUNCTIONS ---
 }

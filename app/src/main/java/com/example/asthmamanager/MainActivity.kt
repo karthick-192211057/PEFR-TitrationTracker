@@ -39,11 +39,21 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
+                // Auth screens (all UI hidden)
                 R.id.splashFragment, R.id.loginFragment, R.id.signupFragment, R.id.forgotPasswordFragment, R.id.resetPasswordFragment, R.id.patientDetailsFragment -> {
                     binding.toolbar.visibility = View.GONE
                     binding.bottomNavigation.visibility = View.GONE
                     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 }
+
+                // Doctor dashboard (toolbar only, no bottom nav or drawer)
+                R.id.doctorDashboardFragment, R.id.doctorProfileFragment, R.id.editDoctorProfileFragment -> {
+                    binding.toolbar.visibility = View.VISIBLE
+                    binding.bottomNavigation.visibility = View.GONE
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                }
+
+                // Patient screens (all UI visible)
                 else -> {
                     binding.toolbar.visibility = View.VISIBLE
                     binding.bottomNavigation.visibility = View.VISIBLE

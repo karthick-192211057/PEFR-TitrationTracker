@@ -28,18 +28,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/textPatientZone"
-            tools:text="Patient Name" />
+            android:text="John Doe" />
 
         <TextView
             android:id="@+id/textPatientZone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#EF5350"
+            android:textColor="#4CAF50"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/textPatientName"
-            tools:text="Red Zone" />
+            android:text="Green Zone" />
 
         <TextView
             android:id="@+id/labelLatestPEFR"
@@ -62,7 +62,7 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/labelLatestPEFR"
             app:layout_constraintBaseline_toBaselineOf="@id/labelLatestPEFR"
-            tools:text="250" />
+            android:text="500" />
 
         <TextView
             android:id="@+id/labelSymptomSeverity"
@@ -85,7 +85,7 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/labelSymptomSeverity"
             app:layout_constraintBaseline_toBaselineOf="@id/labelSymptomSeverity"
-            tools:text="High (8/10)" />
+            android:text="Low (2/10)" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonDownloadReport"
@@ -97,6 +97,19 @@
             android:textColor="@color/primaryColor"
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textSymptomSeverity"
+            app:strokeColor="@color/primaryColor"/>
+        
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonPrescribe"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Prescribe"
+            android:textColor="@color/primaryColor"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toStartOf="@id/buttonDownloadReport"
             app:layout_constraintTop_toBottomOf="@id/textSymptomSeverity"
             app:strokeColor="@color/primaryColor"/>
 

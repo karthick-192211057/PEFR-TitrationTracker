@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -30,6 +31,10 @@ class PEFRInputFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // --- FIX: Set the Activity's toolbar title ---
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Record PEFR"
+        // --- END FIX ---
 
         binding.buttonSubmit.setOnClickListener {
             val pefrValue = binding.editTextPEFR.text.toString().toIntOrNull()

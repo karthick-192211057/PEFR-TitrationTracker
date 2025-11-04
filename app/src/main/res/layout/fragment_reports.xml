@@ -8,17 +8,6 @@
     android:background="@color/primaryColor"
     tools:context=".ReportsFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/primaryColor"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
-        app:navigationIconTint="@color/white"
-        app:title="Reports &amp; Sharing"
-        app:titleTextColor="@color/white" />
-
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardExport"
         android:layout_width="0dp"
@@ -29,7 +18,7 @@
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
         app:cardBackgroundColor="@color/fieldBackgroundColor"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 

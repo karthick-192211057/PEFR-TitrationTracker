@@ -25,10 +25,13 @@ class AlertsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Navigate back
+        // --- FIX: This block was removed ---
+        /*
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
+        */
+        // --- END FIX ---
 
         // Logic for "Add" button (Floating Action Button)
         binding.fabAddAlert.setOnClickListener {

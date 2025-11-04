@@ -254,6 +254,55 @@ def record_symptom(
     db.refresh(db_symptom)
     return db_symptom
 
+
+# --- [START] NEW ENDPOINT TO LINK PATIENT TO DOCTOR ---
+
+@app.post("/patient/link-doctor", response_model=schemas.DoctorPatientLink)
+def link_patient_to_doctor(
+    link_request: schemas.DoctorPatientLinkCreate,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    # 1. Ensure the current user is a Patient
+    if current_user.role != models.UserRole.PATIENT:
+        raise HTTPException(status_code=403, detail="Only patients can link to a doctor.")
+
+    # 2. Find the doctor by the provided email
+    doctor = db.query(models.User).filter(
+        models.User.email == link_request.doctor_email,
+        models.User.role == models.UserRole.DOCTOR
+    ).first()
+
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor not found with that email.")
+
+    # 3. Check if the link already exists
+    existing_link = db.query(models.DoctorPatient).filter(
+        models.DoctorPatient.doctor_id == doctor.id,
+        models.DoctorPatient.patient_id == current_user.id
+    ).first()
+
+    if existing_link:
+        # Link already exists, just return it
+        return existing_link
+
+    # 4. Create the new link
+    db_link = models.DoctorPatient(
+        doctor_id=doctor.id,
+        patient_id=current_user.id
+    )
+    db.add(db_link)
+    db.commit()
+    db.refresh(db_link)
+
+    log_audit(db, current_user.id, "LINK_DOCTOR", f"Patient linked to doctor ID {doctor.id}")
+    db.commit()
+
+    return db_link
+
+# --- [END] NEW ENDPOINT TO LINK PATIENT TO DOCTOR ---
+
+
 # --- NEW: Medication Endpoints ---
 
 @app.post("/medications", response_model=schemas.Medication)
@@ -347,3 +396,47 @@ def get_doctor_patients(
         query = query.join(models.PEFRRecord).filter(models.PEFRRecord.zone == zone)
 
     return query.all()
+
+
+# --- [START] NEW DOCTOR ENDPOINTS ---
+
+def get_patient_by_id(db: Session, patient_id: int):
+    """Helper to get a patient by ID"""
+    return db.query(models.User).filter(models.User.id == patient_id, models.User.role == models.UserRole.PATIENT).first()
+
+@app.get("/patient/{patient_id}/pefr", response_model=List[schemas.PEFRRecord])
+def get_patient_pefr_records(
+    patient_id: int,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    if current_user.role != models.UserRole.DOCTOR:
+        raise HTTPException(status_code=403, detail="Only doctors can access this data.")
+    
+    # TODO: Add check to ensure this doctor is linked to this patient
+    
+    patient = get_patient_by_id(db, patient_id)
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found.")
+        
+    return db.query(models.PEFRRecord).filter(models.PEFRRecord.owner_id == patient_id).all()
+
+
+@app.get("/patient/{patient_id}/symptoms", response_model=List[schemas.Symptom])
+def get_patient_symptom_records(
+    patient_id: int,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    if current_user.role != models.UserRole.DOCTOR:
+        raise HTTPException(status_code=403, detail="Only doctors can access this data.")
+    
+    # TODO: Add check to ensure this doctor is linked to this patient
+
+    patient = get_patient_by_id(db, patient_id)
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found.")
+        
+    return db.query(models.Symptom).filter(models.Symptom.owner_id == patient_id).all()
+
+# --- [END] NEW DOCTOR ENDPOINTS ---

@@ -185,3 +185,21 @@ data class ReminderCreate(
     val time: String,
     val frequency: String
 )
+
+
+// --- [START] NEW DOCTOR-PATIENT LINK MODELS ---
+
+data class DoctorPatientLinkRequest(
+    @SerializedName("doctor_email")
+    val doctorEmail: String
+)
+
+data class DoctorPatientLink(
+    val id: Int,
+    @SerializedName("doctor_id")
+    val doctorId: Int,
+    @SerializedName("patient_id")
+    val patientId: Int
+)
+
+// --- [END] NEW DOCTOR-PATIENT LINK MODELS ---
