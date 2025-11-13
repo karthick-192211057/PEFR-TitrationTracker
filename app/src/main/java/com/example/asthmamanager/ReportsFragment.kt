@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.asthmamanager.databinding.FragmentReportsBinding
 import com.example.asthmamanager.network.DoctorPatientLinkRequest
@@ -31,9 +32,7 @@ class ReportsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentReportsBinding.inflate(inflater, container, false)
-
         patientId = args.patientId
-
         return binding.root
     }
 
@@ -43,54 +42,69 @@ class ReportsFragment : Fragment() {
         if (patientId == -1) {
             // Patient viewing their own reports
             (activity as? AppCompatActivity)?.supportActionBar?.title = "My Reports"
-            // Set up the toggle listener only for the patient
             setupSharingToggle()
         } else {
             // Doctor viewing a patient's reports
             (activity as? AppCompatActivity)?.supportActionBar?.title = "Patient Report (ID: $patientId)"
-            // Disable sharing toggle if it's not your own report
             binding.labelRealTimeSharing.text = "Data sharing is managed by the patient"
             binding.toggleSharing.isEnabled = false
         }
 
         binding.buttonExportPDF.setOnClickListener {
             Toast.makeText(requireContext(), "Generating PDF for patient $patientId", Toast.LENGTH_SHORT).show()
-            // Placeholder logic: You would now call the API with patientId
         }
     }
 
-    // --- [START] NEW FUNCTION TO HANDLE SHARING ---
     private fun setupSharingToggle() {
-        // We set setOnCheckedChangeListener, not setOnClickListener
+        // Note: If the toggle is ON by default in XML, this listener only fires when you CHANGE it.
+        // You may need to turn it OFF and then ON again to see the popup.
         binding.toggleSharing.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                // When toggled on, show confirmation
+                // When toggled ON, show the dialog to enter email
                 showLinkDoctorDialog()
             } else {
-                // When toggled off (This would be a "unlink" feature)
-                // For now, just show a message and prevent un-checking
-                Toast.makeText(requireContext(), "Disabling sharing (not implemented)", Toast.LENGTH_SHORT).show()
-                binding.toggleSharing.isChecked = true // Don't let them un-toggle it yet
+                // When toggled OFF
+                Toast.makeText(requireContext(), "Sharing disabled.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    // --- THIS IS THE FUNCTION THAT CREATES THE POPUP ---
     private fun showLinkDoctorDialog() {
+        // 1. Create an EditText for user input
+        val input = EditText(requireContext())
+        input.hint = "doctor@email.com"
+
+        // 2. Add some padding/margin so it looks nice
+        val container = FrameLayout(requireContext())
+        val params = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        params.setMargins(50, 20, 50, 20) // Left, Top, Right, Bottom margins
+        input.layoutParams = params
+        container.addView(input)
+
+        // 3. Build and Show the Alert Dialog
         AlertDialog.Builder(requireContext())
-            .setTitle("Share Data with Doctor")
-            // In a real app, you'd have an EditText field here.
-            // We will hardcode the email from your database for this test.
-            .setMessage("This will link your account with 'doctor@example.com'. Proceed?")
+            .setTitle("Link to Doctor")
+            .setMessage("Enter your doctor's email address to share your live data.")
+            .setView(container) // Add the input field to the dialog
             .setPositiveButton("Link") { _, _ ->
-                // Use the hardcoded email
-                linkToDoctor("doctor@example.com")
+                val doctorEmail = input.text.toString().trim()
+                if (doctorEmail.isNotEmpty()) {
+                    linkToDoctor(doctorEmail) // Call backend with the typed email
+                } else {
+                    Toast.makeText(requireContext(), "Email cannot be empty", Toast.LENGTH_SHORT).show()
+                    binding.toggleSharing.isChecked = false // Turn toggle back off
+                }
             }
             .setNegativeButton("Cancel") { dialog, _ ->
-                binding.toggleSharing.isChecked = false // Reset toggle
+                binding.toggleSharing.isChecked = false // Turn toggle back off
                 dialog.dismiss()
             }
             .setOnCancelListener {
-                binding.toggleSharing.isChecked = false // Reset toggle
+                binding.toggleSharing.isChecked = false // Turn toggle back off
             }
             .show()
     }
@@ -105,12 +119,12 @@ class ReportsFragment : Fragment() {
                 }
 
                 if (response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Successfully linked to doctor!", Toast.LENGTH_LONG).show()
-                    binding.toggleSharing.isEnabled = false // Disable after linking
+                    Toast.makeText(requireContext(), "Successfully linked to $doctorEmail!", Toast.LENGTH_LONG).show()
+                    // You might want to disable the toggle so they can't accidentally unlink
+                    // binding.toggleSharing.isEnabled = false
                 } else {
-                    // Show specific error from backend (e.g., "Doctor not found")
                     val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                    Toast.makeText(requireContext(), "Linking failed: $errorBody", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Link failed: $errorBody", Toast.LENGTH_LONG).show()
                     binding.toggleSharing.isChecked = false // Reset toggle
                 }
             } catch (e: Exception) {
@@ -119,7 +133,6 @@ class ReportsFragment : Fragment() {
             }
         }
     }
-    // --- [END] NEW FUNCTION TO HANDLE SHARING ---
 
     override fun onDestroyView() {
         super.onDestroyView()

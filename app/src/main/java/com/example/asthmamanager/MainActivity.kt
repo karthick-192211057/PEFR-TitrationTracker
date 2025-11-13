@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
+                // These are the ONLY fragments that will show the Bottom Nav
                 R.id.homeDashboardFragment, R.id.profileFragment, R.id.reportsFragment, R.id.alertsFragment
             ), drawerLayout
         )
@@ -39,21 +40,36 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                // Auth screens (all UI hidden)
-                R.id.splashFragment, R.id.loginFragment, R.id.signupFragment, R.id.forgotPasswordFragment, R.id.resetPasswordFragment, R.id.patientDetailsFragment -> {
+                // 1. Auth screens (ALL UI HIDDEN)
+                R.id.splashFragment,
+                R.id.loginFragment,
+                R.id.signupFragment,
+                R.id.forgotPasswordFragment,
+                R.id.resetPasswordFragment,
+                R.id.patientDetailsFragment -> {
                     binding.toolbar.visibility = View.GONE
                     binding.bottomNavigation.visibility = View.GONE
                     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 }
 
-                // Doctor dashboard (toolbar only, no bottom nav or drawer)
-                R.id.doctorDashboardFragment, R.id.doctorProfileFragment, R.id.editDoctorProfileFragment -> {
+                // 2. Doctor screens & "Detail" screens (Toolbar VISIBLE, BottomNav HIDDEN)
+                R.id.doctorDashboardFragment,
+                R.id.doctorProfileFragment,
+                R.id.editDoctorProfileFragment,
+                R.id.prescribeMedicationFragment, // <--- ADDED
+                R.id.graphFragment,              // <--- ADDED
+                R.id.historyListFragment,        // <--- ADDED
+                R.id.PEFRInputFragment,          // <--- ADDED
+                R.id.symptomTrackerFragment,     // <--- ADDED
+                R.id.notificationFragment,       // <--- ADDED
+                R.id.treatmentPlanFragment       // <--- ADDED
+                    -> {
                     binding.toolbar.visibility = View.VISIBLE
                     binding.bottomNavigation.visibility = View.GONE
                     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 }
 
-                // Patient screens (all UI visible)
+                // 3. Main Patient screens (ALL UI VISIBLE)
                 else -> {
                     binding.toolbar.visibility = View.VISIBLE
                     binding.bottomNavigation.visibility = View.VISIBLE

@@ -3,7 +3,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc  # <--- 'desc' is required for sorting
 from typing import List, Optional
 import datetime
 
@@ -50,7 +50,7 @@ def get_pefr_trend(db: Session, owner_id: int, current_pefr: int):
     """
     Determines if the trend is improving, stable, or worsening.
     """
-    # Get the most recent record
+    # Use desc() here as well to be consistent
     last_record = db.query(models.PEFRRecord).filter(
         models.PEFRRecord.owner_id == owner_id
     ).order_by(desc(models.PEFRRecord.recorded_at)).first()
@@ -141,11 +141,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 # --- Profile Management Endpoints ---
 
-# *** THIS IS THE UPDATED ENDPOINT ***
 @app.get("/profile/me", response_model=schemas.User)
 def get_my_profile(
     current_user: models.User = Depends(auth.get_current_user),
-    db: Session = Depends(database.get_db)
+    db: Session = Depends(database.get_db) # Add the db session
 ):
     # 1. Manually load the Baseline (Fixes "N/A" issue)
     db_baseline = db.query(models.BaselinePEFR).filter(
@@ -156,19 +155,18 @@ def get_my_profile(
     # 2. Manually load the latest PEFR record
     latest_pefr = db.query(models.PEFRRecord).filter(
         models.PEFRRecord.owner_id == current_user.id
-    ).order_by(desc(models.PEFRRecord.recorded_at)).first()
+    ).order_by(desc(models.PEFRRecord.recorded_at)).first() # Use desc()
     
     # 3. Manually load the latest Symptom record
     latest_symptom = db.query(models.Symptom).filter(
         models.Symptom.owner_id == current_user.id
-    ).order_by(desc(models.Symptom.recorded_at)).first()
+    ).order_by(desc(models.Symptom.recorded_at)).first() # Use desc()
     
     # 4. Attach them to the user object
     current_user.latest_pefr_record = latest_pefr
     current_user.latest_symptom = latest_symptom
     
     return current_user
-# *** END OF UPDATE ***
 
 @app.put("/profile/me", response_model=schemas.User)
 def update_my_profile(
@@ -441,7 +439,21 @@ def get_doctor_patients(
     if zone:
         query = query.join(models.PEFRRecord).filter(models.PEFRRecord.zone == zone)
 
-    return query.all()
+    patients = query.all()
+
+    # *** CRITICAL FIX: Manually attach latest records for every patient ***
+    for patient in patients:
+        # Get latest PEFR
+        patient.latest_pefr_record = db.query(models.PEFRRecord).filter(
+            models.PEFRRecord.owner_id == patient.id
+        ).order_by(desc(models.PEFRRecord.recorded_at)).first()
+        
+        # Get latest Symptom
+        patient.latest_symptom = db.query(models.Symptom).filter(
+            models.Symptom.owner_id == patient.id
+        ).order_by(desc(models.Symptom.recorded_at)).first()
+
+    return patients
 
 
 # --- DOCTOR SPECIFIC ENDPOINTS ---
