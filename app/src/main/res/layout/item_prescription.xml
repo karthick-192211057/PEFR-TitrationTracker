@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/fieldBackgroundColor"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textMedicineName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medicine Name"
+            android:textColor="@color/fieldTextColor"
+            android:textSize="17sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/textDosage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dosage: -"
+            android:textColor="@color/fieldTextColor"
+            android:layout_marginTop="6dp"/>
+
+        <TextView
+            android:id="@+id/textFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Frequency: -"
+            android:textColor="@color/fieldTextColor"
+            android:layout_marginTop="2dp"/>
+
+        <TextView
+            android:id="@+id/textDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Duration: -"
+            android:textColor="@color/fieldTextColor"
+            android:layout_marginTop="2dp"/>
+
+        <TextView
+            android:id="@+id/textNotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notes: -"
+            android:textColor="@color/fieldTextColor"
+            android:layout_marginTop="2dp"/>
+
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Not Updated"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_red_light"
+            android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/buttonDeletePrescription"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="end|top"
+            android:layout_margin="8dp"
+            android:backgroundTint="?attr/colorSurface"
+            android:contentDescription="Delete"
+            android:src="@drawable/ic_delete"
+            android:visibility="gone"
+            android:tint="@color/redZone" />
+
+    </FrameLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update Medication Status"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="12dp" />
+
+    <!-- RADIO GROUP -->
+    <RadioGroup
+        android:id="@+id/radioGroupStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioTaken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Taken" />
+
+        <RadioButton
+            android:id="@+id/radioNotTaken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Taken" />
+
+        <!-- ✅ THIS WAS MISSING -->
+        <RadioButton
+            android:id="@+id/radioNotUpdated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Updated" />
+
+    </RadioGroup>
+
+    <!-- SAVE BUTTON -->
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

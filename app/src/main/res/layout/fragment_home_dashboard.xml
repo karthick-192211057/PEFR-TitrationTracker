@@ -13,7 +13,6 @@
         android:id="@+id/contentScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
@@ -45,19 +44,19 @@
                 app:layout_constraintTop_toTopOf="@id/imageAppIcon"
                 app:layout_constraintBottom_toBottomOf="@id/imageAppIcon" />
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageProfile"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="24dp"
-                android:background="@drawable/input_field_background"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_person"
-                app:tint="@color/primaryColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/textViewHeader"
                 app:layout_constraintBottom_toBottomOf="@id/textViewHeader"
-                android:contentDescription="@string/profile"/>
+                android:contentDescription="@string/profile"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/Widget.Shape.CircleImage"/>
 
             <TextView
                 android:id="@+id/textViewTitle"
@@ -76,7 +75,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/cardLightBackgroundColor"
+                app:cardBackgroundColor="@color/BgColor"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="@id/imageProfile"
@@ -86,13 +85,15 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/lineChart"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="260dp"
+                        android:layout_marginTop="8dp"
                         app:layout_constraintTop_toTopOf="parent"/>
+
 
                     <com.google.android.material.button.MaterialButtonToggleGroup
                         android:id="@+id/toggleGroup"
@@ -110,7 +111,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/weekly_button"
-                            android:textColor="@color/white"/>
+                            android:textColor="@color/black"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/buttonMonthly"
@@ -118,7 +119,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/monthly_button"
-                            android:textColor="@color/white"/>
+                            android:textColor="@color/black"/>
 
                     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -131,7 +132,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/cardLightBackgroundColor"
+                app:cardBackgroundColor="@color/BgColor"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="@id/imageProfile"
@@ -194,7 +195,7 @@
                         android:layout_marginTop="8dp"
                         android:text="@string/last_recorded_placeholder"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textPEFRValue"/>
 
@@ -205,7 +206,7 @@
                         android:layout_marginTop="8dp"
                         android:text="@string/zone_guidance_placeholder"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textLastRecorded" />
 
@@ -217,7 +218,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/cardLightBackgroundColor"
+                app:cardBackgroundColor="@color/BgColor"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="@id/imageProfile"
@@ -255,7 +256,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/cardLightBackgroundColor"
+                app:cardBackgroundColor="@color/BgColor"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="@id/imageProfile"

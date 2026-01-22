@@ -8,9 +8,9 @@
     android:layout_marginEnd="16dp"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/fieldBackgroundColor"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="16dp"
-    app:cardElevation="0dp">
+    app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             android:id="@+id/textMedicationName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/fieldTextColor"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,23 +35,79 @@
             android:textColor="@color/fieldTextColor"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textMedicationName" />
+            app:layout_constraintTop_toBottomOf="@+id/textMedicationName"/>
+
+        <TextView
+            android:id="@+id/textMedicationDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/fieldTextColor"
+            android:textSize="14sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:layout_marginTop="6dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textMedicationDose"
+            app:layout_constraintEnd_toStartOf="@+id/buttonEdit"/>
+
+        <TextView
+            android:id="@+id/textMedicationMeta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/fieldTextColor"
+            android:textSize="13sp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textMedicationDescription"
+            app:layout_constraintEnd_toStartOf="@+id/buttonEdit"/>
+
+        <ProgressBar
+            android:id="@+id/progressMedication"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:progress="0"
+            android:max="100"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonEdit"
+            app:layout_constraintTop_toBottomOf="@+id/textMedicationMeta"/>
+
+        <!-- single progress + meta text kept above; duplicates removed -->
+
+        <!-- ✅ Corrected ID -->
+        <TextView
+            android:id="@+id/textMedicationStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Not Updated"
+            android:textColor="@color/zoneGreenLight"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progressMedication"/>
 
         <ImageButton
             android:id="@+id/buttonEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:src="@drawable/ic_edit"
+            app:tint="@color/primaryDarkColor"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
             app:layout_constraintTop_toTopOf="parent"
             android:contentDescription="@string/edit_button_description" />
 
+
         <ImageButton
             android:id="@+id/buttonDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:src="@drawable/ic_delete"
+            app:tint="@color/primaryDarkColor"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

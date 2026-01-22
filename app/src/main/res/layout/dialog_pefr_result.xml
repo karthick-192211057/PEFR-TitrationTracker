@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textPefrValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PEFR: 300"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textTrend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trend: Improving (+20)"
+        android:textSize="16sp"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textBaselinePercent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Baseline %: 95%"
+        android:textSize="14sp"
+        android:paddingBottom="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/buttonTrack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Track Symptoms"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/buttonOk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OK"/>
+    </LinearLayout>
+
+</LinearLayout>

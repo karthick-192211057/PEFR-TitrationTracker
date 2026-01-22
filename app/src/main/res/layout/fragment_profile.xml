@@ -5,33 +5,68 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryColor"
+    android:background="@color/white"
+    android:fillViewport="true"
     tools:context=".ProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="32dp">
+        android:background="@color/white">
 
-        <ImageView
-            android:id="@+id/imageAvatar"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
-            android:src="@drawable/ic_person"/>
+        <!-- Header Section with App Logo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/gradient_primary"
+            android:paddingTop="?attr/actionBarSize"
+            android:paddingBottom="32dp"
+            android:gravity="center"
+            android:layout_marginBottom="0dp">
 
+            <!-- App Logo -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageAvatar"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:padding="0dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/app_logo" />
+
+
+            <!-- Welcome Text -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Profile"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage your personal information"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:alpha="0.9" />
+
+        </LinearLayout>
+
+        <!-- Profile Information Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginTop="32dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/fieldBackgroundColor">
+            android:layout_marginTop="-32dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="12dp"
+            app:cardBackgroundColor="@color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -39,194 +74,507 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
+                <!-- Section Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Personal Information"
+                    android:textColor="@color/primaryColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- NAME -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/name_hint">
+                    android:hint="Full Name"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_person"
+                    app:startIconTint="@color/primaryColor">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:singleLine="true"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- EMAIL -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/email_hint">
+                    android:hint="Email Address"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_email"
+                    app:startIconTint="@color/primaryColor">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:inputType="textEmailAddress"
+                        android:singleLine="true"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- CONTACT -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/contact_number_hint">
+                    android:hint="Contact Number"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_phone"
+                    app:startIconTint="@color/primaryColor">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextContact"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:inputType="phone"
+                        android:singleLine="true"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ADDRESS -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/address_hint">
+                    android:hint="Address"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_location_on"
+                    app:startIconTint="@color/primaryColor">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextAddress"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:minLines="2"
+                        android:maxLines="3"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- AGE -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/baseline_pefr_hint">
+                    android:hint="Age"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_person"
+                    app:startIconTint="@color/primaryColor">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextAge"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- HEIGHT -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Height (cm)"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_person"
+                    app:startIconTint="@color/primaryColor">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextHeight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- GENDER -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Gender"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_person"
+                    app:startIconTint="@color/primaryColor"
+                    app:endIconMode="dropdown_menu"
+                    app:endIconTint="@color/primaryColor">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoCompleteGender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:singleLine="true"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:inputType="none" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- BASELINE PEFR -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Baseline PEFR (Optional)"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/ic_lungs"
+                    app:startIconTint="@color/primaryColor"
+                    app:helperText="Leave empty to auto-calculate from your PEFR readings">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextBaselinePEFR"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Linked Doctor Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardDoctorLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="12dp"
+            app:cardBackgroundColor="@color/white"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Section Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Linked Doctor"
+                    android:textColor="@color/primaryColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Doctor Name -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_person"
+                        android:tint="@color/primaryColor" />
+
+                    <TextView
+                        android:id="@+id/textDoctorLinkName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="@string/age_hint">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextAge"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:hint="@string/height_hint">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextHeight"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="@string/gender_hint">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextGender"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:text="Dr. Name"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
+                <!-- Doctor Email -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_email"
+                        android:tint="@color/primaryColor" />
+
+                    <TextView
+                        android:id="@+id/textDoctorLinkEmail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="doctor@example.com"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <!-- Doctor Contact -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_phone"
+                        android:tint="@color/primaryColor" />
+
+                    <TextView
+                        android:id="@+id/textDoctorLinkContact"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+91 9876543210"
+                        android:textColor="@color/fieldTextColor"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <!-- Unlink Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonUnlinkDoctor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Unlink Doctor"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/redZone"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/redZone"
+                    app:strokeWidth="2dp"
+                    app:backgroundTint="@color/white"
+                    app:icon="@drawable/ic_delete"
+                    app:iconTint="@color/redZone"
+                    app:iconGravity="textStart"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
             </LinearLayout>
+
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
-            android:text="@string/emergency_contacts_label"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewContacts"
+        <!-- Action Buttons -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/medications_label"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewMedications"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonEditProfile"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:orientation="vertical"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginTop="32dp"
-            android:text="@string/edit_profile_button"
-            android:textColor="@color/white"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/white"/>
+            android:layout_marginBottom="40dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonSaveChanges"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/save_changes_button"
-            android:backgroundTint="@color/accentColor"
-            android:textColor="@color/white"
-            app:cornerRadius="12dp"
-            android:visibility="gone" />
+            <!-- Edit Profile Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Edit Profile"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:cornerRadius="16dp"
+                app:backgroundTint="@color/primaryColor"
+                app:icon="@drawable/ic_edit"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                style="@style/Widget.MaterialComponents.Button" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonDownloadReport"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/download_report_button"
-            android:textColor="@color/white"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/white"/>
+            <!-- Save and Cancel Buttons Row (shown when editing) -->
+            <LinearLayout
+                android:id="@+id/layoutEditButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:weightSum="2"
+                android:visibility="gone">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonLogout"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/logout_button"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+                <!-- Cancel Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonCancelEdit"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Cancel"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/fieldTextColor"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/fieldTextColor"
+                    app:strokeWidth="2dp"
+                    app:backgroundTint="@color/white"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <!-- Save Changes Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSaveChanges"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Save Changes"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:enabled="false"
+                    app:cornerRadius="12dp"
+                    app:backgroundTint="@color/accentColor"
+                    app:icon="@drawable/ic_person"
+                    app:iconTint="@color/white"
+                    app:iconGravity="textStart"
+                    style="@style/Widget.MaterialComponents.Button" />
+
+            </LinearLayout>
+
+            <!-- Additional Buttons Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+
+                <!-- First Row: Reports and Logout -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <!-- Download Report Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonDownloadReport"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="Reports"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/primaryColor"
+                        app:cornerRadius="12dp"
+                        app:strokeColor="@color/primaryColor"
+                        app:strokeWidth="2dp"
+                        app:backgroundTint="@color/white"
+                        app:icon="@drawable/ic_reports"
+                        app:iconTint="@color/primaryColor"
+                        app:iconGravity="textStart"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                    <!-- Logout Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonLogout"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Logout"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/redZone"
+                        app:cornerRadius="12dp"
+                        app:strokeColor="@color/redZone"
+                        app:strokeWidth="2dp"
+                        app:backgroundTint="@color/white"
+                        app:icon="@drawable/ic_baseline_logout_24"
+                        app:iconTint="@color/redZone"
+                        app:iconGravity="textStart"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                </LinearLayout>
+
+                <!-- Second Row: Delete Account Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonDeleteAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Delete Account"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="12dp"
+                    app:backgroundTint="@color/redZone"
+                    app:icon="@drawable/ic_delete"
+                    app:iconTint="@color/white"
+                    app:iconGravity="textStart"
+                    style="@style/Widget.MaterialComponents.Button" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>

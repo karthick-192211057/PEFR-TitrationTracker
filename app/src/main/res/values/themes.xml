@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.AsthmaManager" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.PEFRTitrationTracker" parent="Theme.Material3.DayNight.NoActionBar">
 
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
@@ -31,5 +31,11 @@
 
     <style name="Widget.App.SpinnerItem" parent="android:Widget.TextView.SpinnerItem">
         <item name="android:textColor">@color/fieldTextColor</item>
+    </style>
+
+    <!-- Circular image shape for profile pictures -->
+    <style name="Widget.Shape.CircleImage" parent="Widget.MaterialComponents.ShapeableImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">999dp</item>
     </style>
 </resources>

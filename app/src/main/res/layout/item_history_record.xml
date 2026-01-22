@@ -2,47 +2,65 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/fieldBackgroundColor"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="0dp">
+    android:layout_margin="12dp"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/fieldBackgroundColor">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textRecordType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pefr_record_label"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+        <!-- TOP ROW WITH ICON + RECORD TYPE -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/iconType"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_history"
+                app:tint="@color/primaryDarkColor"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:id="@+id/textRecordType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PEFR Record"
+                android:textStyle="bold"
+                android:textColor="@color/primaryDarkColor"
+                android:textSize="17sp"/>
+        </LinearLayout>
+
+        <!-- DATE -->
         <TextView
             android:id="@+id/textRecordDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/record_date_placeholder"
-            android:textColor="@color/fieldHintColor"
-            android:textSize="14sp" />
+            android:layout_marginTop="6dp"
+            android:text="03 Dec 2025, 05:00 AM"
+            android:textColor="@color/fieldTextColor"
+            android:textSize="14sp"/>
 
+        <!-- DETAILS -->
         <TextView
             android:id="@+id/textRecordDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/record_details_placeholder"
-            android:textColor="@color/fieldTextColor"
-            android:textSize="16sp" />
+            android:layout_marginTop="10dp"
+            android:text="Value: 320 (Yellow Zone)"
+            android:textColor="@color/black"
+            android:textSize="15sp"/>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

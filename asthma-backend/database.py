@@ -4,8 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Use SQLite for simple development. The database will be a file named 'asthma.db'
-SQLALCHEMY_DATABASE_URL = "sqlite:///./asthma.db"
+# Use SQLite for simple development. The database will be a file named 'pefrtitrationtracker.db'
+SQLALCHEMY_DATABASE_URL = "sqlite:///./pefrtitrationtracker.db"
 
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db" # Example for PostgreSQL
 

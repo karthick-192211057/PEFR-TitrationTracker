@@ -51,17 +51,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonViewPrescription"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="24dp"
-        android:text="@string/view_detailed_prescription_button"
-        android:textSize="16sp"
-        app:cornerRadius="12dp"
-        app:layout_constraintStart_toStartOf="@id/planCard"
-        app:layout_constraintEnd_toEndOf="@id/planCard"
-        app:layout_constraintTop_toBottomOf="@id/planCard" />
+    <!-- Detailed prescription button removed: descriptions now appear inside each medication card -->
 
     <TextView
         android:id="@+id/textMedicationsTitle"
@@ -73,15 +63,52 @@
         android:textStyle="bold"
         android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="@id/planCard"
-        app:layout_constraintTop_toBottomOf="@id/buttonViewPrescription" />
+        app:layout_constraintTop_toBottomOf="@id/planCard" />
+    <!-- Doctor prescribed section -->
+    <TextView
+        android:id="@+id/textDoctorTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prescribed By Your Doctor"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@id/planCard"
+        app:layout_constraintTop_toBottomOf="@id/textMedicationsTitle" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewMedications"
+        android:id="@+id/recyclerViewDoctorMedications"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/textMedicationsTitle"
+        app:layout_constraintTop_toBottomOf="@id/textDoctorTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        tools:listitem="@layout/item_medication" />
+
+    <!-- AI / ML recommended section -->
+    <TextView
+        android:id="@+id/textAiTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AI / ML Recommendations"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@id/planCard"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewDoctorMedications" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewAiMedications"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/textAiTitle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

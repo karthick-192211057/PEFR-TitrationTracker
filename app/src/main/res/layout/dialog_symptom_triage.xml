@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@drawable/triage_dialog_bg">
+
+    <TextView
+        android:id="@+id/textTriageTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Symptom Triage"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        android:textColor="@color/primaryTextColor"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:id="@+id/textUrgency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Urgency: Yellow"
+        android:textStyle="bold"
+        android:textColor="@color/primaryDarkColor"
+        android:paddingBottom="12dp" />
+
+    <TextView
+        android:id="@+id/textMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Details"
+        android:textColor="@color/primaryTextColor"
+        android:paddingBottom="12dp" />
+
+    <TextView
+        android:id="@+id/textActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recommended actions..."
+        android:textColor="@color/primaryTextColor"
+        android:paddingBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/buttonEdit"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit" />
+
+        <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/buttonProceed"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Proceed" />
+    </LinearLayout>
+</LinearLayout>

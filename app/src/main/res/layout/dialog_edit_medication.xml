@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Medication"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp" />
+
+    <EditText
+        android:id="@+id/inputDose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Dose (e.g., 1 puff)" />
+
+    <EditText
+        android:id="@+id/inputDays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Days (duration)" />
+
+    <EditText
+        android:id="@+id/inputCureProb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:hint="Cure probability (0.0 - 1.0)" />
+
+    <EditText
+        android:id="@+id/inputStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Start date (ISO 2025-12-25T00:00:00Z)" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <Button
+            android:id="@+id/buttonMarkTaken"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mark Taken" />
+
+        <View
+            android:layout_width="12dp"
+            android:layout_height="0dp" />
+
+        <Button
+            android:id="@+id/buttonSaveMed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Save" />
+    </LinearLayout>
+
+</LinearLayout>

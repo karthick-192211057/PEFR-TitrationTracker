@@ -1,4 +1,4 @@
-package com.example.asthmamanager
+package com.example.pefrtitrationtracker
 
 import org.junit.Test
 

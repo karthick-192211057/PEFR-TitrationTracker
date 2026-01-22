@@ -5,9 +5,10 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/splashFragment">
 
+    <!-- Splash -->
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.example.asthmamanager.SplashFragment"
+        android:name="com.example.pefrtitrationtracker.SplashFragment"
         android:label="Splash"
         tools:layout="@layout/fragment_splash">
         <action
@@ -27,9 +28,27 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Verify OTP -->
+    <fragment
+        android:id="@+id/verifyOtpFragment"
+        android:name="com.example.pefrtitrationtracker.VerifyOtpFragment"
+        android:label="Verify OTP"
+        tools:layout="@layout/fragment_verify_otp">
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_verifyOtpFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/signupFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+
+    <!-- Login -->
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.asthmamanager.LoginFragment"
+        android:name="com.example.pefrtitrationtracker.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
@@ -50,9 +69,10 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Signup -->
     <fragment
         android:id="@+id/signupFragment"
-        android:name="com.example.asthmamanager.SignupFragment"
+        android:name="com.example.pefrtitrationtracker.SignupFragment"
         android:label="Sign Up"
         tools:layout="@layout/fragment_signup">
         <action
@@ -63,11 +83,15 @@
         <action
             android:id="@+id/action_signupFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_signupFragment_to_verifyOtpFragment"
+            app:destination="@id/verifyOtpFragment" />
     </fragment>
 
+    <!-- Forgot Password -->
     <fragment
         android:id="@+id/forgotPasswordFragment"
-        android:name="com.example.asthmamanager.ForgotPasswordFragment"
+        android:name="com.example.pefrtitrationtracker.ForgotPasswordFragment"
         android:label="Forgot Password"
         tools:layout="@layout/fragment_forgot_password">
         <action
@@ -80,11 +104,15 @@
             app:destination="@id/resetPasswordFragment" />
     </fragment>
 
+    <!-- Reset Password -->
     <fragment
         android:id="@+id/resetPasswordFragment"
-        android:name="com.example.asthmamanager.ResetPasswordFragment"
+        android:name="com.example.pefrtitrationtracker.ResetPasswordFragment"
         android:label="Reset Password"
         tools:layout="@layout/fragment_reset_password">
+        <argument
+            android:name="email"
+            app:argType="string" />
         <action
             android:id="@+id/action_resetPasswordFragment_to_loginFragment"
             app:destination="@id/loginFragment"
@@ -92,9 +120,10 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Patient Registration -->
     <fragment
         android:id="@+id/patientDetailsFragment"
-        android:name="com.example.asthmamanager.PatientDetailsFragment"
+        android:name="com.example.pefrtitrationtracker.PatientDetailsFragment"
         android:label="Patient Details"
         tools:layout="@layout/fragment_patient_details">
         <action
@@ -104,59 +133,103 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Patient Dashboard -->
     <fragment
         android:id="@+id/homeDashboardFragment"
-        android:name="com.example.asthmamanager.HomeDashboardFragment"
+        android:name="com.example.pefrtitrationtracker.HomeDashboardFragment"
         android:label="Home Dashboard"
         tools:layout="@layout/fragment_home_dashboard">
+
         <action
             android:id="@+id/action_homeDashboardFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+
         <action
             android:id="@+id/action_homeDashboardFragment_to_PEFRInputFragment"
             app:destination="@id/PEFRInputFragment" />
+
         <action
             android:id="@+id/action_homeDashboardFragment_to_graphFragment"
-            app:destination="@id/graphFragment" />
-        <action
-            android:id="@+id/action_homeDashboardFragment_to_alertsFragment"
-            app:destination="@id/alertsFragment" />
+            app:destination="@id/graphFragment">
+            <argument
+                android:name="patientId"
+                app:argType="integer"
+                android:defaultValue="-1" />
+        </action>
+
         <action
             android:id="@+id/action_homeDashboardFragment_to_reportsFragment"
             app:destination="@id/reportsFragment" />
+
         <action
             android:id="@+id/action_homeDashboardFragment_to_symptomTrackerFragment"
             app:destination="@id/symptomTrackerFragment" />
+
         <action
             android:id="@+id/action_homeDashboardFragment_to_treatmentPlanFragment"
             app:destination="@id/treatmentPlanFragment" />
+
         <action
             android:id="@+id/action_homeDashboardFragment_to_notificationFragment"
             app:destination="@id/notificationFragment" />
     </fragment>
 
+    <!-- DOCTOR DASHBOARD (UPDATED FULLY) -->
     <fragment
         android:id="@+id/doctorDashboardFragment"
-        android:name="com.example.asthmamanager.DoctorDashboardFragment"
+        android:name="com.example.pefrtitrationtracker.DoctorDashboardFragment"
         android:label="Doctor Dashboard"
         tools:layout="@layout/fragment_doctor_dashboard">
+
+        <!-- Doctor → Profile -->
         <action
             android:id="@+id/action_doctorDashboardFragment_to_doctorProfileFragment"
             app:destination="@id/doctorProfileFragment" />
+
+        <!-- Doctor → Graph -->
         <action
             android:id="@+id/action_doctorDashboardFragment_to_graphFragment"
-            app:destination="@id/graphFragment" />
+            app:destination="@id/graphFragment">
+            <argument
+                android:name="patientId"
+                app:argType="integer"
+                android:defaultValue="-1" />
+        </action>
+
+        <!-- Doctor → Report -->
         <action
-            android:id="@+id/action_doctorDashboardFragment_to_reportsFragment"
-            app:destination="@id/reportsFragment" />
+            android:id="@+id/action_doctorDashboardFragment_to_doctorReportsFragment"
+            app:destination="@id/reportsFragment">
+            <argument
+                android:name="patientId"
+                app:argType="integer" />
+        </action>
+
+        <!-- Doctor → History -->
+        <action
+            android:id="@+id/action_doctorDashboardFragment_to_doctorHistoryFragment"
+            app:destination="@id/prescriptionHistoryFragment">
+            <argument
+                android:name="patientId"
+                app:argType="integer" />
+        </action>
+
+        <!-- Doctor → Prescribe -->
         <action
             android:id="@+id/action_doctorDashboardFragment_to_prescribeMedicationFragment"
-            app:destination="@id/prescribeMedicationFragment" />
+            app:destination="@id/prescribeMedicationFragment">
+            <argument
+                android:name="patientId"
+                app:argType="integer" />
+        </action>
+
     </fragment>
 
+
+    <!-- Profile -->
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.asthmamanager.ProfileFragment"
+        android:name="com.example.pefrtitrationtracker.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile">
         <action
@@ -166,9 +239,10 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Doctor Profile -->
     <fragment
         android:id="@+id/doctorProfileFragment"
-        android:name="com.example.asthmamanager.DoctorProfileFragment"
+        android:name="com.example.pefrtitrationtracker.DoctorProfileFragment"
         android:label="Doctor Profile"
         tools:layout="@layout/fragment_doctor_profile">
         <action
@@ -181,29 +255,31 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Edit Doctor Profile -->
     <fragment
         android:id="@+id/editDoctorProfileFragment"
-        android:name="com.example.asthmamanager.EditDoctorProfileFragment"
+        android:name="com.example.pefrtitrationtracker.EditDoctorProfileFragment"
         android:label="Edit Doctor Profile"
         tools:layout="@layout/fragment_edit_doctor_profile" />
 
+    <!-- Record PEFR -->
     <fragment
         android:id="@+id/PEFRInputFragment"
-        android:name="com.example.asthmamanager.PEFRInputFragment"
+        android:name="com.example.pefrtitrationtracker.PEFRInputFragment"
         android:label="PEFR Input"
-        tools:layout="@layout/fragment_pefr_input" >
-        <!-- THIS IS THE NEW ACTION YOU MUST ADD -->
+        tools:layout="@layout/fragment_pefr_input">
         <action
             android:id="@+id/action_PEFRInputFragment_to_symptomTrackerFragment"
             app:destination="@id/symptomTrackerFragment"
             app:popUpTo="@id/homeDashboardFragment" />
     </fragment>
 
+    <!-- Graph -->
     <fragment
         android:id="@+id/graphFragment"
-        android:name="com.example.asthmamanager.GraphFragment"
+        android:name="com.example.pefrtitrationtracker.GraphFragment"
         android:label="Graph"
-        tools:layout="@layout/fragment_graph" >
+        tools:layout="@layout/fragment_graph">
         <argument
             android:name="patientId"
             app:argType="integer"
@@ -211,60 +287,81 @@
 
         <action
             android:id="@+id/action_graphFragment_to_historyListFragment"
-            app:destination="@id/historyListFragment" />
-
+            app:destination="@id/historyListFragment">
+            <argument
+                android:name="patientId"
+                app:argType="integer" />
+        </action>
     </fragment>
 
+    <!-- Prescription History -->
+    <fragment
+        android:id="@+id/prescriptionHistoryFragment"
+        android:name="com.example.pefrtitrationtracker.PrescriptionHistoryFragment"
+        android:label="Prescription History"
+        tools:layout="@layout/fragment_prescription_history">
+        <argument
+            android:name="patientId"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Symptom Tracker -->
     <fragment
         android:id="@+id/symptomTrackerFragment"
-        android:name="com.example.asthmamanager.SymptomTrackerFragment"
+        android:name="com.example.pefrtitrationtracker.SymptomTrackerFragment"
         android:label="Symptom Tracker"
         tools:layout="@layout/fragment_symptom_tracker" />
 
+    <!-- Treatment Plan -->
     <fragment
         android:id="@+id/treatmentPlanFragment"
-        android:name="com.example.asthmamanager.TreatmentPlanFragment"
+        android:name="com.example.pefrtitrationtracker.TreatmentPlanFragment"
         android:label="Treatment Plan"
         tools:layout="@layout/fragment_treatment_plan" />
 
+    <!-- About -->
     <fragment
-        android:id="@+id/alertsFragment"
-        android:name="com.example.asthmamanager.AlertsFragment"
-        android:label="Alerts"
-        tools:layout="@layout/fragment_alerts" />
+        android:id="@+id/aboutFragment"
+        android:name="com.example.pefrtitrationtracker.AboutFragment"
+        android:label="About"
+        tools:layout="@layout/fragment_about" />
 
+    <!-- Reports -->
     <fragment
         android:id="@+id/reportsFragment"
-        android:name="com.example.asthmamanager.ReportsFragment"
+        android:name="com.example.pefrtitrationtracker.ReportsFragment"
         android:label="Reports"
-        tools:layout="@layout/fragment_reports" >
+        tools:layout="@layout/fragment_reports">
         <argument
             android:name="patientId"
             app:argType="integer"
             android:defaultValue="-1" />
     </fragment>
 
+    <!-- Notifications -->
     <fragment
         android:id="@+id/notificationFragment"
-        android:name="com.example.asthmamanager.NotificationFragment"
+        android:name="com.example.pefrtitrationtracker.NotificationFragment"
         android:label="Notification"
         tools:layout="@layout/fragment_notification" />
 
+    <!-- Prescribe -->
     <fragment
         android:id="@+id/prescribeMedicationFragment"
-        android:name="com.example.asthmamanager.PrescribeMedicationFragment"
+        android:name="com.example.pefrtitrationtracker.PrescribeMedicationFragment"
         android:label="Prescribe Medication"
-        tools:layout="@layout/fragment_prescribe_medication" >
+        tools:layout="@layout/fragment_prescribe_medication">
         <argument
             android:name="patientId"
             app:argType="integer" />
     </fragment>
 
+    <!-- History List -->
     <fragment
         android:id="@+id/historyListFragment"
-        android:name="com.example.asthmamanager.HistoryListFragment"
+        android:name="com.example.pefrtitrationtracker.HistoryListFragment"
         android:label="History"
-        tools:layout="@layout/fragment_history_list" >
+        tools:layout="@layout/fragment_history_list">
         <argument
             android:name="patientId"
             app:argType="integer"

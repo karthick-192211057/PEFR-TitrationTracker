@@ -1,16 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#2D7A7F</color>
+
+    <!-- Primary Theme Colors -->
+    <color name="primaryColor">#2D7A7E</color>
     <color name="primaryDarkColor">#205559</color>
+    <color name="primaryColorLight">#E0F7F4</color>
+
+    <!-- Accent + Buttons -->
     <color name="accentColor">#4DB6AC</color>
+    <color name="BgColor">#328587</color>
+    <color name="buttonColor">#00897B</color>
+
+    <!-- Text + Fields -->
     <color name="fieldBackgroundColor">#E0F2F1</color>
     <color name="fieldTextColor">#333333</color>
+    <color name="fieldHintColor">#BDBDBD</color>
+
+    <!-- Basic -->
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
-    <color name="cardLightBackgroundColor">#334DB6AC</color>
+
+    <!-- Card Backgrounds (required for HomeDashboard) -->
+    <color name="cardLightBackgroundColor">#E2F1EF</color>
+    <!-- FIXED -->
+    <color name="cardMediumBackgroundColor">#E8F1F1</color>
+    <color name="cardDarkBackgroundColor">#DDEAEA</color>
+
+    <!-- Zone Colors (Symptoms) -->
+    <color name="zone_red">#FF6B6B</color>
+    <color name="zone_yellow">#FFD93D</color>
+    <color name="zone_green">#4CAF50</color>
     <color name="greenZone">#4CAF50</color>
     <color name="yellowZone">#FBC02D</color>
-    <color name="fieldHintColor">#BDBDBD</color>
-    <color name="buttonColor">#00897B</color>
     <color name="redZone">#F44336</color>
+    <color name="graphUnifiedBg">#DEE9E8</color>
+    <color name="gray">#A8A8A8</color>
+    <color name="primaryTextColor">#333333</color>
+    <color name="overlay">#80000000</color>
+    <!-- Zone Backgrounds (Pastel Soft Colors) -->
+    <color name="zoneGreenLight">#DFF5E3</color>   <!-- Light pastel green -->
+    <color name="zoneYellowLight">#FFF7D1</color>  <!-- Light pastel yellow -->
+    <color name="zoneRedLight">#FFD6D6</color>     <!-- Light pastel red -->
+
+
+
 </resources>

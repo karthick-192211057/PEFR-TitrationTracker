@@ -2,28 +2,45 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
-    android:background="@color/primaryColor"
-    android:gravity="bottom"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:theme="@style/ThemeOverlay.Material3.Dark">
+    android:background="@color/primaryColor"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="20dp"
+    android:paddingTop="@dimen/nav_header_top_padding">
 
+    <!-- App Logo -->
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher_round"/>
+        android:id="@+id/headerLogo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_launcher_foreground"
+        android:scaleType="centerInside"
+        android:contentDescription="@string/asthma_app_logo_description" />
 
+    <!-- App Title -->
     <TextView
+        android:id="@+id/headerTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="6dp"
         android:text="@string/nav_header_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
+    <!-- Subtitle -->
     <TextView
+        android:id="@+id/headerSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/nav_header_subtitle"/>
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="2dp"
+        android:text="@string/nav_header_subtitle"
+        android:textColor="@color/fieldBackgroundColor"
+        android:textSize="14sp" />
 
 </LinearLayout>

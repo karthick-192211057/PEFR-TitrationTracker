@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primaryColor"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- HEADER -->
+        <TextView
+            android:id="@+id/titleAboutApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/textVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Version"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:paddingBottom="12dp" />
+
+
+        <!-- INTRO CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:backgroundTint="@color/fieldBackgroundColor">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="What is PEFR?"
+                    android:textColor="@color/primaryDarkColor"
+                    android:textStyle="bold"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/fieldTextColor"
+                    android:text="Peak Expiratory Flow Rate (PEFR) measures how quickly a person can exhale. It helps track asthma control and detect early signs of worsening symptoms." />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="PEFR Titration Tracker helps you:"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"
+                    android:text="• Track your daily PEFR\n• Monitor symptoms\n• View PEFR graph trends\n• Detect worsening early\n• Get reminders for medication\n• Share reports with your doctor" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <!-- HOW APP WORKS CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="@color/fieldBackgroundColor"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="How to Use the App"
+                    android:textStyle="bold"
+                    android:textColor="@color/primaryDarkColor"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="1️⃣ Set your Baseline PEFR in Profile"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="2️⃣ Record PEFR daily in the app"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="3️⃣ Log symptoms whenever they appear"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="4️⃣ View graphs in the Graph Tab to check progress"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="5️⃣ Set reminders for regular PEFR tracking"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="6️⃣ Share reports &amp; enable doctor live monitoring"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <!-- GREEN ZONE CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:backgroundTint="#D9F5E3"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Green Zone"
+                    android:textStyle="bold"
+                    android:textColor="@color/greenZone"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_marginTop="6dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• PEFR &gt; 80% of baseline\n• Good asthma control\n• Continue regular medication"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <!-- YELLOW ZONE CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:backgroundTint="#FFF6D1"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Yellow Zone"
+                    android:textStyle="bold"
+                    android:textColor="@color/yellowZone"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_marginTop="6dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• PEFR 50% - 80% of baseline\n• Possible asthma worsening\n• Use reliever inhaler\n• Follow action plan"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <!-- RED ZONE CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FFD6D6"
+            android:layout_marginBottom="18dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Red Zone"
+                    android:textStyle="bold"
+                    android:textColor="@color/redZone"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_marginTop="6dp"
+                    android:text="• PEFR &lt; 50% of baseline\n• Severe asthma risk\n• Take rescue medication immediately\n• Seek emergency help"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- FOOTER -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="© 2025 Asthma Manager App"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_marginTop="20dp" />
+
+    </LinearLayout>
+</ScrollView>

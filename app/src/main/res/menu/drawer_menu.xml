@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/homeDashboardFragment"
         android:icon="@drawable/ic_home"
         android:title="Home" />
+
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_person"
         android:title="Profile" />
+
+    <item
+        android:id="@+id/treatmentPlanFragment"
+        android:icon="@drawable/ic_lungs"
+        android:title="Medications" />
+
     <item
         android:id="@+id/reportsFragment"
         android:icon="@drawable/ic_reports"
         android:title="Reports" />
+
     <item
-        android:id="@+id/alertsFragment"
-        android:icon="@drawable/ic_notifications"
-        android:title="Alerts" />
+        android:id="@+id/aboutFragment"
+        android:icon="@drawable/ic_info"
+        android:title="About" />
+
 </menu>

@@ -57,7 +57,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:textColor="@color/fieldTextColor"/>
+                    android:digits="0123456789"
+                    android:maxLength="3"
+                    android:textColor="@color/fieldTextColor"
+                    android:imeOptions="actionDone"
+                    android:imeActionLabel="✓"
+                    android:imeActionId="6"/>
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>

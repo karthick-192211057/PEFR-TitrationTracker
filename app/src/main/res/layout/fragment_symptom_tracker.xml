@@ -14,12 +14,28 @@
         android:orientation="vertical"
         android:padding="24dp">
 
+        <!-- Card container to give a floating panel look -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/fieldBackgroundColor">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+
         <TextView
             android:id="@+id/tv_symptom_prompt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/symptom_prompt"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -36,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/wheezing_label"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="18sp"
             android:textStyle="bold"/>
         <RatingBar
@@ -53,7 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/coughing_label"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="18sp"
             android:textStyle="bold"/>
         <RatingBar
@@ -70,7 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/shortness_of_breath_label"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="18sp"
             android:textStyle="bold"/>
         <RatingBar
@@ -87,7 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/night_time_symptoms_label"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="18sp"
             android:textStyle="bold"/>
         <RatingBar
@@ -104,7 +120,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/triggers_prompt"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="18sp"
             android:textStyle="bold"/>
 
@@ -122,25 +138,35 @@
             android:text="@string/smoke_exposure_checkbox"
             android:textColor="@color/fieldTextColor"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/other_triggers_hint">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/other_triggers_hint">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSuspectedTrigger"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSuspectedTrigger"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLength="30"
+                        android:imeOptions="actionDone"
+                        android:hint="Other suspected triggers..." />
 
-        </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_submit_symptoms"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/submit_symptoms_button"
-            android:layout_marginTop="24dp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_submit_symptoms"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="@string/submit_symptoms_button"
+                    android:layout_marginTop="20dp"
+                    android:backgroundTint="@color/accentColor"
+                    android:textColor="@color/white"
+                    app:cornerRadius="12dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>

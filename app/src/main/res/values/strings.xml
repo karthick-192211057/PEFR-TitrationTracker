@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AsthmaManager</string>
+    <string name="app_name">PEFR Titration Tracker</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="profile">Profile</string>
     <string name="welcome_message">Welcome, %1$s</string>
@@ -11,7 +11,7 @@
     <string name="pefr_value_placeholder">500</string>
     <string name="symptom_severity_label">Symptom Severity:</string>
     <string name="symptom_severity_placeholder">Low (2/10)</string>
-    <string name="download_report_button">Download Report</string>
+    <string name="download_report_button">Export Report</string>
     <string name="prescribe_button">Prescribe</string>
     <string name="symptom_prompt">How are you feeling?</string>
     <string name="symptom_rating_prompt">Rate your symptoms from 0 (none) to 5 (severe).</string>
@@ -31,8 +31,8 @@
     <string name="view_detailed_prescription_button">View Detailed Prescription</string>
     <string name="your_prescribed_medications">Your Prescribed Medications</string>
     <string name="no_medications_prescribed">No medications prescribed yet.</string>
-    <string name="nav_header_title">AsthmaManager</string>
-    <string name="nav_header_subtitle">info@asthmamanager.com</string>
+    <string name="nav_header_title">PEFR Titration Tracker</string>
+    <string name="nav_header_subtitle">info@pefrtitrationtracker.com</string>
     <string name="symptoms_label">Symptoms</string>
     <string name="view_history_button">View History</string>
     <string name="no_pefr_data_found">No PEFR data found</string>
@@ -50,7 +50,7 @@
     <string name="signup_button">Sign Up</string>
     <string name="login_link">Already have an account? Login</string>
     <string name="splash_background_image_description">Splash Background Image</string>
-    <string name="asthma_app_logo_description">Asthma App Logo</string>
+    <string name="asthma_app_logo_description">PEFR Titration Tracker Logo</string>
     <string name="app_title_splash">Asthma PEFR Tracker</string>
     <string name="loading_text">Loading...</string>
     <string name="edit_button_description">Edit</string>
@@ -116,11 +116,35 @@
     <string name="new_password_hint">New Password</string>
     <string name="confirm_new_password_hint">Confirm New Password</string>
     <string name="forgot_password_title">Forgot Password</string>
-    <string name="forgot_password_subtitle">Enter your email and we\'ll send you a link to reset your password.</string>
-    <string name="send_reset_link_button">Send Reset Link</string>
+    <string name="forgot_password_subtitle">Enter your email and we\'ll send you a 6-digit OTP to reset your password.</string>
+    <string name="send_reset_link_button">Send Reset Code</string>
     <string name="back_to_login_link">Back to Login</string>
     <string name="user_registration_title">User Registration</string>
     <string name="next_button">Next</string>
     <string name="edit_profile_title">Edit Profile</string>
     <string name="network_error_loading_data">Network error. Could not load data.</string>
+    <!-- Added strings for HomeDashboardFragment (Merged Option B2) -->
+
+    <string name="error_profile_not_retrieved">Could not retrieve user profile.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="no_pefr_record">No PEFR recorded yet</string>
+    <string name="last_recorded_format">Last recorded: %1$s</string>
+    <string name="green_zone_guidance">You are in the Green Zone. Continue your regular plan.</string>
+    <string name="yellow_zone_guidance">Yellow Zone: Use your reliever inhaler. Follow your action plan.</string>
+    <string name="red_zone_guidance">Red Zone: Medical Emergency. Use reliever and seek help.</string>
+    <string name="unknown_zone_guidance">Record a PEFR value to see your current zone.</string>
+    <string name="weekly_pefr">Weekly PEFR</string>
+    <string name="monthly_pefr">Monthly PEFR</string>
+    <string name="just_now">just now</string>
+    <string name="error_fetching_chart">Failed to load chart data</string>
+    <string name="error_fetching_dashboard">Failed to load dashboard</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="doctor_name">Dr. Pradeep</string>
+    <string name="profile_information">Profile Information</string>
+    <string name="doctor_email">Email: drpradeep@gmail.com</string>
+    <string name="doctor_contact">Contact: 9876543210</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="logout">Logout</string>
+
+
 </resources>

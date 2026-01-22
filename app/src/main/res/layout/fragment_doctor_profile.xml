@@ -1,45 +1,289 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DoctorProfileFragment">
+    android:background="@color/primaryColor">
 
-    <TextView
-        android:id="@+id/text_doctor_name"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/doctor_name_placeholder"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:paddingBottom="32dp">
 
-    <Button
-        android:id="@+id/button_edit_profile"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:text="@string/edit_profile_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_doctor_name" />
+        <!-- HEADER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp"
+            android:gravity="center_horizontal">
 
-    <Button
-        android:id="@+id/button_logout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:text="@string/logout_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_edit_profile" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageDoctorProfile"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_app_logo"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/Widget.Shape.CircleImage"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/textDoctorName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dr. Name"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="26sp"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
+
+        <!-- PROFILE INFO CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="-24dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@color/fieldBackgroundColor">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile Information"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/primaryDarkColor"/>
+
+                <!-- EMAIL ROW -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:src="@drawable/ic_email"
+                        android:background="@drawable/circle_white"
+                        android:padding="8dp"
+                        android:tint="@color/primaryColor" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="EMAIL"
+                            android:textAllCaps="true"
+                            android:textSize="12sp"
+                            android:textColor="@color/fieldTextColor"/>
+
+                        <TextView
+                            android:id="@+id/textEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="doc@gmail.com"
+                            android:textSize="16sp"
+                            android:textColor="@color/primaryDarkColor"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- CONTACT ROW -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:src="@drawable/ic_phone"
+                        android:background="@drawable/circle_white"
+                        android:padding="8dp"
+                        android:tint="@color/primaryColor" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CONTACT"
+                            android:textAllCaps="true"
+                            android:textSize="12sp"
+                            android:textColor="@color/fieldTextColor"/>
+
+                        <TextView
+                            android:id="@+id/textContact"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="7358618044"
+                            android:textSize="16sp"
+                            android:textColor="@color/primaryDarkColor"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- ADDRESS ROW -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:src="@drawable/ic_location_on"
+                        android:background="@drawable/circle_white"
+                        android:padding="8dp"
+                        android:tint="@color/primaryColor" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ADDRESS"
+                            android:textAllCaps="true"
+                            android:textSize="12sp"
+                            android:textColor="@color/fieldTextColor"/>
+
+                        <TextView
+                            android:id="@+id/textAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="abc"
+                            android:textSize="16sp"
+                            android:textColor="@color/primaryDarkColor"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- SPECIALTY ROW -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:src="@drawable/ic_medical"
+                        android:background="@drawable/circle_white"
+                        android:padding="8dp"
+                        android:tint="@color/primaryColor" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SPECIALTY"
+                            android:textAllCaps="true"
+                            android:textSize="12sp"
+                            android:textColor="@color/fieldTextColor"/>
+
+                        <TextView
+                            android:id="@+id/textSpecialty"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Doctor"
+                            android:textSize="16sp"
+                            android:textColor="@color/primaryDarkColor"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- EDIT BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonEditDoctor"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="28dp"
+            android:text="EDIT PROFILE"
+            android:textSize="16sp"
+            android:backgroundTint="@color/accentColor"
+            android:textColor="@color/white"
+            app:cornerRadius="14dp"/>
+
+        <!-- LOGOUT BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonLogoutDoctor"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="12dp"
+            android:text="LOGOUT"
+            android:textSize="16sp"
+            android:textColor="@color/redZone"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:cornerRadius="14dp"/>
+
+        <!-- DELETE ACCOUNT BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDeleteAccountDoctor"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="12dp"
+            android:text="DELETE ACCOUNT"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/redZone"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_delete"
+            app:iconTint="@color/white"
+            app:iconGravity="textStart"/>
+
+    </LinearLayout>
+</ScrollView>

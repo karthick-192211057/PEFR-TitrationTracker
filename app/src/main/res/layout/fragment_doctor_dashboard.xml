@@ -6,21 +6,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryColor"
-    tools:context="com.example.asthmamanager.DoctorDashboardFragment">
+    tools:context="com.example.pefrtitrationtracker.DoctorDashboardFragment">
 
-    <ImageView
-        android:id="@+id/imageProfile"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/input_field_background"
-        android:padding="8dp"
-        android:src="@drawable/ic_person"
-        app:tint="@color/primaryColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/profile"/>
+    <!-- Header with app logo + title + profile icon -->
+    <LinearLayout
+        android:id="@+id/headerRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageAppLogo"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_launcher_foreground"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/asthma_app_logo_description"/>
+
+        <TextView
+            android:id="@+id/textDoctorDashboardTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Doctor Dashboard"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp" />
+
+        <ImageView
+            android:id="@+id/imageProfile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/input_field_background"
+            android:padding="8dp"
+            android:src="@drawable/ic_person"
+            app:tint="@color/primaryColor"
+            android:contentDescription="@string/profile"/>
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPatients"
@@ -29,10 +58,12 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/imageProfile"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerRow"
+        app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/item_patient_card"
         tools:visibility="visible" />
 
