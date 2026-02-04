@@ -75,8 +75,17 @@ class LoginFragment : Fragment() {
                         val tokenResponse = response.body()!!
                         val session = SessionManager(requireContext())
 
+                        // Ensure selected role matches server-assigned role
+                        val serverRole = tokenResponse.userRole ?: ""
+                        if (!serverRole.equals(selectedRole, ignoreCase = true)) {
+                            Toast.makeText(requireContext(), "Selected role is wrong please select the correct role", Toast.LENGTH_SHORT).show()
+                            binding.buttonLogin.isEnabled = true
+                            binding.buttonLogin.text = "Login"
+                            return@launch
+                        }
+
                         session.saveAuthToken(tokenResponse.accessToken)
-                        session.saveUserRole(selectedRole)
+                        session.saveUserRole(serverRole)
 
                         // Run a quick post-login sync so the app UI reflects server state
                         // (medications, PEFRs, symptoms, profile). Best-effort; navigation
@@ -107,7 +116,7 @@ class LoginFragment : Fragment() {
                             } catch (_: Exception) {}
                         } catch (_: Exception) {}
 
-                        if (selectedRole.equals("Doctor", ignoreCase = true)) {
+                        if (serverRole.equals("Doctor", ignoreCase = true)) {
                             findNavController().navigate(
                                 LoginFragmentDirections.actionLoginFragmentToDoctorDashboardFragment()
                             )
@@ -147,7 +156,49 @@ class LoginFragment : Fragment() {
                         }
 
                     } else {
-                        Toast.makeText(requireContext(), "Login failed. Check credentials.", Toast.LENGTH_LONG).show()
+                        val errorCode = response.code()
+                        if (errorCode == 401 || errorCode == 400) {
+                            // Parse error message from response
+                            val errorMessage = try {
+                                val errorBody = response.errorBody()?.string()
+                                if (errorBody != null) {
+                                    // Extract detail from JSON error response
+                                    val jsonObject = org.json.JSONObject(errorBody)
+                                    jsonObject.optString("detail", "Login failed")
+                                } else {
+                                    "Login failed"
+                                }
+                            } catch (e: Exception) {
+                                "Login failed"
+                            }
+
+                            when {
+                                errorMessage.contains("Incorrect password", ignoreCase = true) -> {
+                                    Toast.makeText(requireContext(), "Incorrect password", Toast.LENGTH_SHORT).show()
+                                }
+                                errorMessage.contains("User not found", ignoreCase = true) -> {
+                                    // Email not found - offer signup option
+                                    val notFoundEmail = email  // Capture email for use in dialog
+                                    val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                                    builder.setTitle("Email Not Found")
+                                    builder.setMessage("Mail ID not found.\n\nWould you like to sign up using this email?")
+                                    builder.setPositiveButton("Sign Up") { _, _ ->
+                                        // Pass email to signup fragment
+                                        SignupCache.email = notFoundEmail
+                                        findNavController().navigate(
+                                            LoginFragmentDirections.actionLoginFragmentToSignupFragment()
+                                        )
+                                    }
+                                    builder.setNegativeButton("Cancel", null)
+                                    builder.show()
+                                }
+                                else -> {
+                                    Toast.makeText(requireContext(), "Login failed. Check credentials.", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), "Login failed. Check credentials.", Toast.LENGTH_LONG).show()
+                        }
                         binding.buttonLogin.isEnabled = true
                     }
 

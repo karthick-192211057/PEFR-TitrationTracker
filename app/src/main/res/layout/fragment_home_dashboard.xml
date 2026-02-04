@@ -94,6 +94,18 @@
                         android:layout_marginTop="8dp"
                         app:layout_constraintTop_toTopOf="parent"/>
 
+                    <TextView
+                        android:id="@+id/noDataText"
+                        android:layout_width="match_parent"
+                        android:layout_height="260dp"
+                        android:layout_marginTop="8dp"
+                        android:text="No PEFR records in Last 7 days"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
 
                     <com.google.android.material.button.MaterialButtonToggleGroup
                         android:id="@+id/toggleGroup"

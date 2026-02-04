@@ -31,6 +31,9 @@ class SymptomTrackerFragment : Fragment() {
 
     private var _binding: FragmentSymptomTrackerBinding? = null
     private val binding get() = _binding!!
+    
+    private var lastSubmitTime = 0L
+    private val SUBMIT_THROTTLE_MS = 1000L // Prevent double-submit within 1 second
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,8 +48,21 @@ class SymptomTrackerFragment : Fragment() {
 
         (activity as? AppCompatActivity)?.supportActionBar?.title = "Symptom Tracker"
 
-        // Respect max length and IME action for the 'Other' input
-        binding.etSuspectedTrigger.filters = arrayOf(InputFilter.LengthFilter(30))
+        // Filter to accept only letters (a-z, A-Z) and spaces, max 35 characters
+        binding.etSuspectedTrigger.filters = arrayOf(
+            InputFilter.LengthFilter(35),
+            InputFilter { source, start, end, dest, dstart, dend ->
+                // Allow only letters and spaces
+                for (i in start until end) {
+                    val c = source[i]
+                    if (!c.isLetter() && c != ' ') {
+                        // Return empty string to block this character
+                        return@InputFilter source.subSequence(0, 0)
+                    }
+                }
+                null // Accept the input
+            }
+        )
         binding.etSuspectedTrigger.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // hide keyboard
@@ -66,8 +82,13 @@ class SymptomTrackerFragment : Fragment() {
     }
 
     private fun submitSymptoms() {
-
-        // Read values from all the new UI elements
+        // Guard against rapid submission
+        val now = System.currentTimeMillis()
+        if (now - lastSubmitTime < SUBMIT_THROTTLE_MS) {
+            Toast.makeText(context, "Please wait before submitting again", Toast.LENGTH_SHORT).show()
+            return
+        }
+        lastSubmitTime = now
         val wheezeRating = binding.ratingWheeze.rating.toInt()
         val coughRating = binding.ratingCough.rating.toInt()
         val dyspneaRating = binding.ratingDyspnea.rating.toInt()

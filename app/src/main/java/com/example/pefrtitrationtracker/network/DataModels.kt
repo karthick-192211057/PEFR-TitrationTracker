@@ -167,12 +167,13 @@ data class Medication(
     val dose: String?,
     val schedule: String?,
     val description: String?,
-    @SerializedName("start_date") val startDate: String?,
+    @SerializedName("start_date") val startDate: String? = null,
     val days: Int?,
     @SerializedName("cure_probability") val cureProbability: Double?,
     @SerializedName("doses_remaining") var dosesRemaining: Int?,
     val source: String?,
     @SerializedName("prescribed_by") val prescribedBy: Int?,
+    @SerializedName("created_at") val createdAt: String? = null,
 
     @SerializedName("owner_id")
     val ownerId: Int,

@@ -258,15 +258,22 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonLogoutDoctor"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="48dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginTop="12dp"
-            android:text="LOGOUT"
-            android:textSize="16sp"
+            android:text="Logout"
+            android:textSize="14sp"
+            android:textAllCaps="false"
             android:textColor="@color/redZone"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:cornerRadius="14dp"/>
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/redZone"
+            app:strokeWidth="2dp"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_baseline_logout_24"
+            app:iconTint="@color/redZone"
+            app:iconGravity="textStart"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
         <!-- DELETE ACCOUNT BUTTON -->
         <com.google.android.material.button.MaterialButton

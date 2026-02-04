@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,13 @@ class ReportsFragment : Fragment() {
 
     private var pdfData: ByteArray? = null
     private var csvData: ByteArray? = null
+
+    // Job management for async operations
+    private var fetchJob: kotlinx.coroutines.Job? = null
+    private var exportJob: kotlinx.coroutines.Job? = null
+    private var linkDoctorJob: kotlinx.coroutines.Job? = null
+    private var isFetching = false
+    private var isExporting = false
 
     private val savePdfLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/pdf")
@@ -102,21 +110,80 @@ class ReportsFragment : Fragment() {
         }
 
         binding.buttonExportPDF.safeClick {
-            lifecycleScope.launch {
-                fetchAllData()
-                exportPdf()
+            if (isExporting) {
+                Toast.makeText(requireContext(), "Export already in progress", Toast.LENGTH_SHORT).show()
+                return@safeClick
+            }
+            isExporting = true
+            exportJob?.cancel()
+            exportJob = lifecycleScope.launch {
+                try {
+                    if (!isAdded || _binding == null) {
+                        isExporting = false
+                        return@launch
+                    }
+                    fetchAllData()
+                    if (!isAdded || _binding == null) {
+                        isExporting = false
+                        return@launch
+                    }
+                    exportPdf()
+                } catch (e: Exception) {
+                    Log.e("Reports", "PDF export error: ${e.message}")
+                    if (isAdded && _binding != null) {
+                        Toast.makeText(requireContext(), "Export failed", Toast.LENGTH_SHORT).show()
+                    }
+                } finally {
+                    isExporting = false
+                }
             }
         }
 
         binding.buttonExportCSV.safeClick {
-            lifecycleScope.launch {
-                fetchAllData()
-                exportCsv()
+            if (isExporting) {
+                Toast.makeText(requireContext(), "Export already in progress", Toast.LENGTH_SHORT).show()
+                return@safeClick
+            }
+            isExporting = true
+            exportJob?.cancel()
+            exportJob = lifecycleScope.launch {
+                try {
+                    if (!isAdded || _binding == null) {
+                        isExporting = false
+                        return@launch
+                    }
+                    fetchAllData()
+                    if (!isAdded || _binding == null) {
+                        isExporting = false
+                        return@launch
+                    }
+                    exportCsv()
+                } catch (e: Exception) {
+                    Log.e("Reports", "CSV export error: ${e.message}")
+                    if (isAdded && _binding != null) {
+                        Toast.makeText(requireContext(), "Export failed", Toast.LENGTH_SHORT).show()
+                    }
+                } finally {
+                    isExporting = false
+                }
             }
         }
 
-        lifecycleScope.launch {
-            fetchAllData()
+        if (isFetching) return
+        isFetching = true
+        fetchJob?.cancel()
+        fetchJob = lifecycleScope.launch {
+            try {
+                if (!isAdded || _binding == null) {
+                    isFetching = false
+                    return@launch
+                }
+                fetchAllData()
+            } catch (e: Exception) {
+                Log.e("Reports", "Initial data fetch error: ${e.message}")
+            } finally {
+                isFetching = false
+            }
         }
     }
 
@@ -169,15 +236,28 @@ class ReportsFragment : Fragment() {
     }
 
     private fun linkToDoctor(email: String) {
-        lifecycleScope.launch {
-            val response = withContext(Dispatchers.IO) {
-                RetrofitClient.apiService.linkDoctor(DoctorPatientLinkRequest(email))
-            }
+        if (!isAdded || _binding == null) return
+        linkDoctorJob?.cancel()
+        linkDoctorJob = lifecycleScope.launch {
+            try {
+                if (!isAdded || _binding == null) return@launch
+                
+                val response = withContext(Dispatchers.IO) {
+                    RetrofitClient.apiService.linkDoctor(DoctorPatientLinkRequest(email))
+                }
 
-            if (response.isSuccessful)
-                Toast.makeText(requireContext(), "Linked!", Toast.LENGTH_LONG).show()
-            else
-                Toast.makeText(requireContext(), "Failed to link", Toast.LENGTH_LONG).show()
+                if (!isAdded || _binding == null) return@launch
+                
+                if (response.isSuccessful)
+                    Toast.makeText(requireContext(), "Linked!", Toast.LENGTH_LONG).show()
+                else
+                    Toast.makeText(requireContext(), "Failed to link", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Log.e("Reports", "Link doctor error: ${e.message}")
+                if (isAdded && _binding != null) {
+                    Toast.makeText(requireContext(), "Failed to link", Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 
@@ -409,6 +489,11 @@ class ReportsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        // Cancel all async operations
+        fetchJob?.cancel()
+        exportJob?.cancel()
+        linkDoctorJob?.cancel()
 
         // Reset doctor flag after leaving
         requireActivity().intent.putExtra("isDoctorReport", false)

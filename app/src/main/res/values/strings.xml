@@ -135,6 +135,8 @@
     <string name="unknown_zone_guidance">Record a PEFR value to see your current zone.</string>
     <string name="weekly_pefr">Weekly PEFR</string>
     <string name="monthly_pefr">Monthly PEFR</string>
+    <string name="no_pefr_records_last_7_days">No PEFR records in Last 7 days</string>
+    <string name="no_pefr_records_last_30_days">No PEFR records in Last 30 days</string>
     <string name="just_now">just now</string>
     <string name="error_fetching_chart">Failed to load chart data</string>
     <string name="error_fetching_dashboard">Failed to load dashboard</string>

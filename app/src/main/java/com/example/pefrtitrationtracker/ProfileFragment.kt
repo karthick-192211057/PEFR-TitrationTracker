@@ -94,7 +94,7 @@ class ProfileFragment : Fragment() {
         })
 
         // Setup gender dropdown options
-        val genderOptions = listOf("Male", "Female", "Other")
+        val genderOptions = listOf("Male", "Female", "Prefer Not to say")
         val genderAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, genderOptions)
         binding.autoCompleteGender.setAdapter(genderAdapter)
 
@@ -292,13 +292,39 @@ class ProfileFragment : Fragment() {
         val genderVal = binding.autoCompleteGender.text.toString().trim()
         val baselineVal = binding.editTextBaselinePEFR.text.toString().toIntOrNull()
 
-        val nameOk = nameVal.isNotEmpty() && Regex("^[A-Za-z ]+$").matches(nameVal)
+        // Validation rules
+        val nameOk = nameVal.isNotEmpty() && nameVal.length <= 30 && Regex("^[A-Za-z ]+$").matches(nameVal)
         val contactOk = contactVal.isNotEmpty() && Regex("^[6-9][0-9]{9}$").matches(contactVal)
         val addressOk = addressVal.isNotEmpty() && addressVal.length <= 180
-        val ageOk = ageVal != null && ageVal in 6..100
-        val heightOk = heightVal != null && heightVal in 70..280
-        val genderOk = genderVal.lowercase() in listOf("male","female","other")
+        val ageOk = ageVal != null && ageVal in 6..125
+        val heightOk = heightVal != null && heightVal in 100..300
+        val genderOk = genderVal.lowercase() in listOf("male", "female", "prefer not to say")
         val baselineOk = baselineVal == null || (baselineVal >= 55 && baselineVal <= 999)
+
+        // Show error messages if fields are invalid
+        if (binding.buttonSaveChanges.visibility == View.VISIBLE) {
+            if (!nameOk && nameVal.isNotEmpty()) {
+                if (nameVal.length > 30) {
+                    binding.editTextName.error = "Maximum 30 characters"
+                } else {
+                    binding.editTextName.error = "Only letters and spaces allowed"
+                }
+            } else {
+                binding.editTextName.error = null
+            }
+
+            if (!ageOk && !binding.editTextAge.text.isNullOrEmpty()) {
+                binding.editTextAge.error = "Enter valid age between 6-125"
+            } else {
+                binding.editTextAge.error = null
+            }
+
+            if (!heightOk && !binding.editTextHeight.text.isNullOrEmpty()) {
+                binding.editTextHeight.error = "Enter valid height 100-300 cm"
+            } else {
+                binding.editTextHeight.error = null
+            }
+        }
 
         binding.buttonSaveChanges.isEnabled = nameOk && contactOk && addressOk && ageOk && heightOk && genderOk && baselineOk
     }
@@ -328,52 +354,58 @@ class ProfileFragment : Fragment() {
         val genderVal = binding.autoCompleteGender.text.toString().trim()
         val baselineVal = binding.editTextBaselinePEFR.text.toString().toIntOrNull()
 
-        // Name: letters and spaces only
+        // Name: letters and spaces only, max 30 characters
         val nameRegex = Regex("^[A-Za-z ]+$")
-        if (nameVal.isEmpty() || !nameRegex.matches(nameVal)) {
-            Toast.makeText(requireContext(), "Enter a valid name (letters and spaces only)", Toast.LENGTH_LONG).show()
+        if (nameVal.isEmpty() || !nameRegex.matches(nameVal) || nameVal.length > 30) {
+            if (nameVal.isEmpty()) {
+                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+            } else if (nameVal.length > 30) {
+                Toast.makeText(requireContext(), "Name must be maximum 30 characters", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(requireContext(), "Name should only contain letters and spaces", Toast.LENGTH_LONG).show()
+            }
             return
         }
 
         // Contact: starts with 6-9 and exactly 10 digits
         val contactRegex = Regex("^[6-9][0-9]{9}$")
-        if (contactVal.isNotEmpty() && !contactRegex.matches(contactVal)) {
-            Toast.makeText(requireContext(), "Enter a valid 10-digit contact starting with 6/7/8/9", Toast.LENGTH_LONG).show()
+        if (contactVal.isEmpty() || !contactRegex.matches(contactVal)) {
+            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
             return
         }
 
         // Address: max 180 chars
-        if (addressVal.length > 180) {
-            Toast.makeText(requireContext(), "Address must be less than 180 characters", Toast.LENGTH_LONG).show()
+        if (addressVal.isEmpty() || addressVal.length > 180) {
+            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Age: mandatory and must be 6-125
+        if (ageVal == null || ageVal < 6 || ageVal > 125) {
+            Toast.makeText(requireContext(), "Enter valid age between 6-125", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Height cm: mandatory and must be 100-300
+        if (heightVal == null || heightVal < 100 || heightVal > 300) {
+            Toast.makeText(requireContext(), "Enter valid height between 100-300 cm", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Gender: compulsory and must be male/female/prefer not to say (case-insensitive)
+        if (genderVal.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+            return
+        }
+        val genderLower = genderVal.lowercase()
+        if (genderLower !in listOf("male", "female", "prefer not to say")) {
+            Toast.makeText(requireContext(), "Gender must be Male, Female or Prefer Not to say", Toast.LENGTH_LONG).show()
             return
         }
 
         // Baseline PEFR: optional, but if provided must be 55 - 999
         if (baselineVal != null && (baselineVal < 55 || baselineVal > 999)) {
             Toast.makeText(requireContext(), "Baseline PEFR must be between 55 and 999", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        // Age: mandatory and must be 6 - 100
-        if (ageVal == null || ageVal < 6 || ageVal > 100) {
-            Toast.makeText(requireContext(), "Age is required and must be between 6 and 100", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        // Height cm: if provided, 70 - 280
-        if (heightVal != null && (heightVal < 70 || heightVal > 280)) {
-            Toast.makeText(requireContext(), "Enter correct height in cm (70-280)", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        // Gender: compulsory and must be male/female/other (case-insensitive)
-        if (genderVal.isEmpty()) {
-            Toast.makeText(requireContext(), "Please select a gender", Toast.LENGTH_LONG).show()
-            return
-        }
-        val genderLower = genderVal.lowercase()
-        if (genderLower !in listOf("male", "female", "other")) {
-            Toast.makeText(requireContext(), "Gender must be Male, Female or Other", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -418,7 +450,7 @@ class ProfileFragment : Fragment() {
     // DELETE ACCOUNT
     // ------------------------------------------------
     private fun showDeleteAccountConfirmationDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_confirm_action, null)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_delete_account_confirmation, null)
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .setCancelable(false)
@@ -428,14 +460,27 @@ class ProfileFragment : Fragment() {
 
         dialogView.findViewById<android.widget.TextView>(R.id.dialogTitle).text = "Delete Account"
         dialogView.findViewById<android.widget.TextView>(R.id.dialogMessage).text =
-            "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed."
+            "Your account and all associated data will be permanently deleted from our servers. This action cannot be undone."
+
+        val checkboxAcknowledge = dialogView.findViewById<android.widget.CheckBox>(R.id.checkboxAcknowledge)
+        val confirmButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.buttonConfirm)
+        
+        // Initially disable confirm button
+        confirmButton.isEnabled = false
+        confirmButton.alpha = 0.5f
+        
+        // Enable confirm button only when checkbox is ticked
+        checkboxAcknowledge.setOnCheckedChangeListener { _, isChecked ->
+            confirmButton.isEnabled = isChecked
+            confirmButton.alpha = if (isChecked) 1.0f else 0.5f
+        }
 
         dialogView.findViewById<View>(R.id.buttonCancel).setOnClickListener {
             dialog.dismiss()
         }
 
-        dialogView.findViewById<View>(R.id.buttonConfirm).apply {
-            (this as com.google.android.material.button.MaterialButton).text = "Delete Account"
+        confirmButton.apply {
+            text = "Delete Account"
             setOnClickListener {
                 dialog.dismiss()
                 deleteAccount()

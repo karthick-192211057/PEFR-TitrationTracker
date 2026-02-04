@@ -28,6 +28,13 @@ class MedicationStatusBottomSheet(
     ): View {
         _binding = BottomsheetMedicationStatusBinding.inflate(inflater, container, false)
 
+        // If medication already marked Taken, prevent further edits from patient side
+        if (medication.takenStatus?.equals("Taken", ignoreCase = true) == true) {
+            Toast.makeText(requireContext(), "Status already marked Taken", Toast.LENGTH_SHORT).show()
+            dismiss()
+            return binding.root
+        }
+
         // Pre-select existing status
         when (medication.takenStatus) {
             "Taken" -> binding.radioTaken.isChecked = true
@@ -67,6 +74,8 @@ class MedicationStatusBottomSheet(
                         val session = com.example.pefrtitrationtracker.network.SessionManager(requireContext())
                         val msg = "Medication ${medication.name} marked '$newStatus'"
                         session.addNotification(msg)
+                        // Save a local timestamp so the UI can display when status changed
+                        session.saveMedicationStatusTime(medication.id, System.currentTimeMillis())
                     } catch (_: Exception) {}
                     dismiss()
                 }

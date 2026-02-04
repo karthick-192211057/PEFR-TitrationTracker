@@ -19,6 +19,7 @@ import com.example.pefrtitrationtracker.databinding.FragmentDoctorDashboardBindi
 import com.example.pefrtitrationtracker.network.RetrofitClient
 import com.example.pefrtitrationtracker.network.SessionManager
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 class DoctorDashboardFragment : Fragment() {
 
@@ -26,6 +27,24 @@ class DoctorDashboardFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var patientAdapter: PatientAdapter
+    
+    // Navigation throttling
+    private var lastNavigationTime = 0L
+    private val NAVIGATION_THROTTLE_MS = 1000L
+    
+    // Loading state
+    private var isFetching = false
+    private var fetchJob: Job? = null
+    
+    private fun canNavigate(): Boolean {
+        val now = System.currentTimeMillis()
+        return if (now - lastNavigationTime >= NAVIGATION_THROTTLE_MS) {
+            lastNavigationTime = now
+            true
+        } else {
+            false
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,10 +67,12 @@ class DoctorDashboardFragment : Fragment() {
 
         // Profile icon → Doctor profile
         binding.imageProfile.safeClick {
-            val action =
-                DoctorDashboardFragmentDirections
-                    .actionDoctorDashboardFragmentToDoctorProfileFragment()
-            findNavController().navigate(action)
+            if (canNavigate()) {
+                val action =
+                    DoctorDashboardFragmentDirections
+                        .actionDoctorDashboardFragmentToDoctorProfileFragment()
+                findNavController().navigate(action)
+            }
         }
 
         setupRecyclerView()
@@ -69,52 +90,60 @@ class DoctorDashboardFragment : Fragment() {
 
             // Doctor → Graph
             onPatientClicked = { patient ->
-                val id: Int = patient.id ?: return@PatientAdapter
-                requireActivity().intent.putExtra("isDoctorGraph", true)
+                if (canNavigate()) {
+                    val id: Int = patient.id ?: return@PatientAdapter
+                    requireActivity().intent.putExtra("isDoctorGraph", true)
 
-                val action =
-                    DoctorDashboardFragmentDirections
-                        .actionDoctorDashboardFragmentToGraphFragment(id)
+                    val action =
+                        DoctorDashboardFragmentDirections
+                            .actionDoctorDashboardFragmentToGraphFragment(id)
 
-                findNavController().navigate(action)
+                    findNavController().navigate(action)
+                }
             },
 
             // Doctor → PDF Report
             onDownloadClicked = { patient ->
-                val id: Int = patient.id ?: return@PatientAdapter
+                if (canNavigate()) {
+                    val id: Int = patient.id ?: return@PatientAdapter
 
-                requireActivity().intent.putExtra("isDoctorGraph", false)
-                requireActivity().intent.putExtra("isDoctorReport", true)
+                    requireActivity().intent.putExtra("isDoctorGraph", false)
+                    requireActivity().intent.putExtra("isDoctorReport", true)
 
-                val action =
-                    DoctorDashboardFragmentDirections
-                        .actionDoctorDashboardFragmentToDoctorReportsFragment(id)
+                    val action =
+                        DoctorDashboardFragmentDirections
+                            .actionDoctorDashboardFragmentToDoctorReportsFragment(id)
 
-                findNavController().navigate(action)
+                    findNavController().navigate(action)
+                }
             },
 
             // Doctor → Prescribe Medication
             onPrescribeClicked = { patient ->
-                val id: Int = patient.id ?: return@PatientAdapter
+                if (canNavigate()) {
+                    val id: Int = patient.id ?: return@PatientAdapter
 
-                requireActivity().intent.putExtra("isDoctorGraph", false)
+                    requireActivity().intent.putExtra("isDoctorGraph", false)
 
-                val action =
-                    DoctorDashboardFragmentDirections
-                        .actionDoctorDashboardFragmentToPrescribeMedicationFragment(id)
+                    val action =
+                        DoctorDashboardFragmentDirections
+                            .actionDoctorDashboardFragmentToPrescribeMedicationFragment(id)
 
-                findNavController().navigate(action)
+                    findNavController().navigate(action)
+                }
             },
 
             // Doctor → History
             onHistoryClicked = { patient ->
-                val id: Int = patient.id ?: return@PatientAdapter
+                if (canNavigate()) {
+                    val id: Int = patient.id ?: return@PatientAdapter
 
-                val action =
-                    DoctorDashboardFragmentDirections
-                        .actionDoctorDashboardFragmentToDoctorHistoryFragment(id)
+                    val action =
+                        DoctorDashboardFragmentDirections
+                            .actionDoctorDashboardFragmentToDoctorHistoryFragment(id)
 
-                findNavController().navigate(action)
+                    findNavController().navigate(action)
+                }
             },
 
             // Doctor → Delete Patient (show confirmation then delete)
@@ -167,82 +196,160 @@ class DoctorDashboardFragment : Fragment() {
     private fun deletePatient(patientId: Int) {
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.apiService.deleteLinkedPatient(patientId)
+                // Check if fragment is still valid
+                if (!isAdded || _binding == null) return@launch
+
+                val response = try {
+                    RetrofitClient.apiService.deleteLinkedPatient(patientId)
+                } catch (e: Exception) {
+                    Log.e("DoctorDashboard", "Delete network error: ${e.message}")
+                    Toast.makeText(requireContext(), "Network error. Please retry.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
 
                 if (response.isSuccessful) {
-                    // Remove the patient locally if present for immediate feedback
-                    val remaining = patientAdapter.getItems().filter { it.id != patientId }
-                    patientAdapter.updateData(remaining)
-                    // Persist deletion so it doesn't reappear after relogin
-                    SessionManager(requireContext()).addDeletedPatientId(patientId)
-                    // Also refresh server list in background to remain consistent
-                    fetchPatients()
+                    try {
+                        // Remove the patient locally if present for immediate feedback
+                        val remaining = patientAdapter.getItems().filter { it.id != patientId }
+                        patientAdapter.updateData(remaining)
+                        // Persist deletion so it doesn't reappear after relogin
+                        SessionManager(requireContext()).addDeletedPatientId(patientId)
+                        Toast.makeText(requireContext(), "Patient deleted.", Toast.LENGTH_SHORT).show()
+                        // Also refresh server list in background to remain consistent
+                        fetchPatients()
+                    } catch (e: Exception) {
+                        Log.e("DoctorDashboard", "UI update error after delete: ${e.message}")
+                        Toast.makeText(requireContext(), "Updated locally. Refreshing...", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Log.e("DoctorDashboard", "Delete failed: ${response.code()}")
                     Toast.makeText(requireContext(), "Failed to delete patient (server error)", Toast.LENGTH_SHORT).show()
                 }
 
             } catch (e: Exception) {
-                Log.e("DoctorDashboard", "Delete error: ${e.message}")
+                Log.e("DoctorDashboard", "Delete error: ${e.message}", e)
+                Toast.makeText(requireContext(), "Error deleting patient", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun fetchPatients() {
-        binding.progressBar.isVisible = true
-        binding.textNoPatients.isVisible = false
+        if (isFetching) return
+        isFetching = true
+        
+        // Cancel previous fetch job if still running
+        fetchJob?.cancel()
 
-        lifecycleScope.launch {
+        try {
+            binding.progressBar.isVisible = true
+            binding.textNoPatients.isVisible = false
+        } catch (e: Exception) {
+            Log.e("DoctorDashboard", "UI error: ${e.message}")
+            isFetching = false
+            return
+        }
+
+        fetchJob = lifecycleScope.launch {
             try {
-                val response = RetrofitClient.apiService.getDoctorPatients(null, null)
+                // Check if fragment is still valid
+                if (!isAdded || _binding == null) {
+                    isFetching = false
+                    return@launch
+                }
+
+                val response = try {
+                    RetrofitClient.apiService.getDoctorPatients(null, null)
+                } catch (e: Exception) {
+                    Log.e("DoctorDashboard", "Network error: ${e.message}")
+                    try {
+                        binding.recyclerViewPatients.isVisible = false
+                        binding.textNoPatients.text = "Network error. Please retry."
+                        binding.textNoPatients.isVisible = true
+                        binding.progressBar.isVisible = false
+                    } catch (_: Exception) {}
+                    isFetching = false
+                    return@launch
+                }
+
+                // Check again after network call
+                if (!isAdded || _binding == null) {
+                    isFetching = false
+                    return@launch
+                }
 
                 if (response.isSuccessful && response.body() != null) {
                     val patients = response.body()!!
 
                     if (patients.isNotEmpty()) {
-                        // filter out any patients that were deleted locally by this doctor
-                        val deleted = SessionManager(requireContext()).fetchDeletedPatientIds()
-                        val filtered = patients.filter { it.id == null || !deleted.contains(it.id.toString()) }
-                        patientAdapter.updateData(filtered)
-                        // Create notifications for any patients in Red zone
-                        val session = SessionManager(requireContext())
-                        val existing = session.fetchNotifications()
-                        for (p in filtered) {
-                            val zone = p.latestPefrRecord?.zone ?: p.latestSymptom?.severity ?: ""
-                            if (zone.equals("Red", ignoreCase = true)) {
-                                val msg = "Patient ${p.fullName ?: "#${p.id}"} is in Red Zone"
-                                // avoid duplicate entries with same message
-                                if (!existing.any { it.endsWith("|$msg") }) {
-                                    session.addNotification(msg)
+                        try {
+                            // filter out any patients that were deleted locally by this doctor
+                            val deleted = SessionManager(requireContext()).fetchDeletedPatientIds()
+                            val filtered = patients.filter { it.id == null || !deleted.contains(it.id.toString()) }
+                            patientAdapter.updateData(filtered)
+                            
+                            // Create notifications for any patients in Red zone
+                            try {
+                                val session = SessionManager(requireContext())
+                                val existing = session.fetchNotifications()
+                                for (p in filtered) {
+                                    val zone = p.latestPefrRecord?.zone ?: p.latestSymptom?.severity ?: ""
+                                    if (zone.equals("Red", ignoreCase = true)) {
+                                        val msg = "Patient ${p.fullName ?: "#${p.id}"} is in Red Zone"
+                                        // avoid duplicate entries with same message
+                                        if (!existing.any { it.endsWith("|$msg") }) {
+                                            session.addNotification(msg)
+                                        }
+                                    }
                                 }
+                            } catch (e: Exception) {
+                                Log.e("DoctorDashboard", "Notification error: ${e.message}")
                             }
+                            
+                            binding.recyclerViewPatients.isVisible = true
+                            binding.textNoPatients.isVisible = false
+                        } catch (e: Exception) {
+                            Log.e("DoctorDashboard", "UI update error: ${e.message}")
                         }
-                        binding.recyclerViewPatients.isVisible = true
-                        binding.textNoPatients.isVisible = false
                     } else {
-                        binding.recyclerViewPatients.isVisible = false
-                        binding.textNoPatients.text = "No patients linked yet."
-                        binding.textNoPatients.isVisible = true
+                        try {
+                            binding.recyclerViewPatients.isVisible = false
+                            binding.textNoPatients.text = "No patients linked yet."
+                            binding.textNoPatients.isVisible = true
+                        } catch (e: Exception) {
+                            Log.e("DoctorDashboard", "Empty state UI error: ${e.message}")
+                        }
                     }
 
                 } else {
-                    binding.recyclerViewPatients.isVisible = false
-                    binding.textNoPatients.text = "Failed to load patients."
-                    binding.textNoPatients.isVisible = true
+                    try {
+                        binding.recyclerViewPatients.isVisible = false
+                        binding.textNoPatients.text = "Failed to load patients."
+                        binding.textNoPatients.isVisible = true
+                    } catch (e: Exception) {
+                        Log.e("DoctorDashboard", "Error UI error: ${e.message}")
+                    }
                 }
 
             } catch (e: Exception) {
-                binding.recyclerViewPatients.isVisible = false
-                binding.textNoPatients.text = "Network error. Please retry."
-                binding.textNoPatients.isVisible = true
+                Log.e("DoctorDashboard", "Fetch error: ${e.message}", e)
+                try {
+                    binding.recyclerViewPatients.isVisible = false
+                    binding.textNoPatients.text = "Network error. Please retry."
+                    binding.textNoPatients.isVisible = true
+                } catch (_: Exception) {}
             } finally {
-                binding.progressBar.isVisible = false
+                try {
+                    binding.progressBar.isVisible = false
+                } catch (_: Exception) {}
+                isFetching = false
             }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Cancel any in-flight network/UI jobs
+        fetchJob?.cancel()
         // Reset doctor flag after doctor leaves report screen
         requireActivity().intent.putExtra("isDoctorReport", false)
         _binding = null

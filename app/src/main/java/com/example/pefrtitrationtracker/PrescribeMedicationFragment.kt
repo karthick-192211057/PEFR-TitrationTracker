@@ -28,6 +28,10 @@ class PrescribeMedicationFragment : Fragment() {
     private val args: PrescribeMedicationFragmentArgs by navArgs()
     private var patientId: Int = -1
 
+    // Job management
+    private var prescribeJob: kotlinx.coroutines.Job? = null
+    private var isPrescribing = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,11 +50,45 @@ class PrescribeMedicationFragment : Fragment() {
         // Set patient's name
         binding.textPatientName.text = "Prescribing for Patient (ID: $patientId)"
 
-        // Handle description word counter and prescribe click
+        // Add real-time validation for dosage field (1-2000 mg)
+        binding.textInputDosage.editText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isNotEmpty()) {
+                    try {
+                        val dosageValue = s.toString().toInt()
+                        when {
+                            dosageValue < 1 -> binding.textInputDosage.error = "Dosage must be at least 1 mg"
+                            dosageValue > 2000 -> {
+                                binding.textInputDosage.error = "Dosage cannot exceed 2000 mg"
+                                // Trim to 2000
+                                s?.delete(s.length - 1, s.length)
+                            }
+                            else -> binding.textInputDosage.error = null
+                        }
+                    } catch (e: NumberFormatException) {
+                        binding.textInputDosage.error = "Please enter a valid number"
+                    }
+                }
+            }
+        })
+
+        // Add real-time character filtering for description (letters and spaces only)
         binding.inputDescription.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                val text = s?.toString() ?: ""
+                // Filter to keep only letters, spaces, and common punctuation for descriptions
+                val filtered = text.filter { it.isLetter() || it.isWhitespace() || it in ",.!?-'" }
+                
+                if (text != filtered) {
+                    s?.clear()
+                    s?.append(filtered)
+                }
+                
+                // Count words and show counter
                 val words = s?.toString()?.trim()?.split(Regex("\\s+"))?.filter { it.isNotBlank() } ?: listOf()
                 val wordCount = words.size
                 if (wordCount > 150) {
@@ -86,6 +124,27 @@ class PrescribeMedicationFragment : Fragment() {
             return
         }
 
+        // Validate dosage is numeric and in range 1-2000
+        try {
+            val dosageValue = dosage.toInt()
+            if (dosageValue < 1 || dosageValue > 2000) {
+                Toast.makeText(context, "Dosage must be between 1 and 2000 mg", Toast.LENGTH_SHORT).show()
+                return
+            }
+        } catch (e: NumberFormatException) {
+            Toast.makeText(context, "Please enter a valid dosage number", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Validate description contains only letters, spaces, and common punctuation
+        if (!description.isNullOrEmpty()) {
+            val invalidChars = description.filter { !it.isLetter() && !it.isWhitespace() && it !in ",.!?-'" }
+            if (invalidChars.isNotEmpty()) {
+                Toast.makeText(context, "Description can only contain letters, spaces, and basic punctuation", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
         // Create the request object
         // We'll put the dosage in the 'dose' field and leave 'schedule' null for now
         val medicationRequest = MedicationCreate(
@@ -95,42 +154,108 @@ class PrescribeMedicationFragment : Fragment() {
             description = description
         )
 
-        binding.buttonPrescribe.isEnabled = false
-        binding.buttonPrescribe.text = "Prescribing..."
+        if (isPrescribing) {
+            Toast.makeText(context, "Prescribing already in progress", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        lifecycleScope.launch {
+        isPrescribing = true
+        prescribeJob?.cancel()
+
+        try {
+            binding.buttonPrescribe.isEnabled = false
+            binding.buttonPrescribe.text = "Prescribing..."
+        } catch (e: Exception) {
+            Log.e("PrescribeMed", "UI setup error: ${e.message}")
+        }
+
+        prescribeJob = lifecycleScope.launch {
             try {
+                if (!isAdded || _binding == null) {
+                    isPrescribing = false
+                    return@launch
+                }
+
                 // Call the new API endpoint
                 val response = RetrofitClient.apiService.prescribeMedication(patientId, medicationRequest)
 
+                if (!isAdded || _binding == null) {
+                    isPrescribing = false
+                    return@launch
+                }
+
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Medication prescribed", Toast.LENGTH_SHORT).show()
-                    // Mark patient locally so dashboard shows updated status immediately
-                    val session = SessionManager(requireContext())
-                    session.addRecentlyPrescribed(patientId)
-                    // Add notification for this prescribe action
-                    val patientLabel = binding.textPatientName.text.toString().ifBlank { "Patient #$patientId" }
-                    session.addNotification("Prescribed $medName to $patientLabel")
-                    // Go back to the doctor dashboard
-                    findNavController().popBackStack()
+                    try {
+                        Toast.makeText(context, "Medication prescribed", Toast.LENGTH_SHORT).show()
+                        // Mark patient locally so dashboard shows updated status immediately
+                        val session = SessionManager(requireContext())
+                        session.addRecentlyPrescribed(patientId)
+                        // Add notification for this prescribe action
+                        val patientLabel = binding.textPatientName.text.toString().ifBlank { "Patient #$patientId" }
+                        session.addNotification("Prescribed $medName to $patientLabel")
+
+                        // Save created time locally so the patient card shows the prescription timestamp.
+                        // If backend returned a created_at value, use that; otherwise use now.
+                        try {
+                            val med = response.body()
+                            if (med != null) {
+                                val medId = med.id
+                                val created = med.createdAt
+                                if (!created.isNullOrBlank()) {
+                                    try {
+                                        val inst = java.time.OffsetDateTime.parse(created).toInstant()
+                                        session.saveMedicationCreatedTime(medId, inst.toEpochMilli())
+                                    } catch (e: Exception) {
+                                        try {
+                                            val inst2 = java.time.Instant.parse(created)
+                                            session.saveMedicationCreatedTime(medId, inst2.toEpochMilli())
+                                        } catch (_: Exception) {
+                                            session.saveMedicationCreatedTime(medId, System.currentTimeMillis())
+                                        }
+                                    }
+                                } else {
+                                    session.saveMedicationCreatedTime(medId, System.currentTimeMillis())
+                                }
+                            }
+                        } catch (_: Exception) {}
+
+                        if (isAdded && _binding != null) {
+                            // Go back to the doctor dashboard
+                            findNavController().popBackStack()
+                        }
+                    } catch (e: Exception) {
+                        Log.e("PrescribeMed", "UI error after success: ${e.message}")
+                    }
                 } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Prescription failed"
-                    Log.e("PrescribeMedication", "API Error: $errorMsg")
-                    Toast.makeText(context, "Error: $errorMsg", Toast.LENGTH_LONG).show()
+                    if (isAdded && _binding != null) {
+                        val errorMsg = response.errorBody()?.string() ?: "Prescription failed"
+                        Log.e("PrescribeMedication", "API Error: $errorMsg")
+                        Toast.makeText(context, "Error: $errorMsg", Toast.LENGTH_LONG).show()
+                    }
                 }
 
             } catch (e: Exception) {
                 Log.e("PrescribeMedication", "Network Exception: ${e.message}", e)
-                Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
+                if (isAdded && _binding != null) {
+                    Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             } finally {
-                binding.buttonPrescribe.isEnabled = true
-                binding.buttonPrescribe.text = "Prescribe"
+                isPrescribing = false
+                if (isAdded && _binding != null) {
+                    try {
+                        binding.buttonPrescribe.isEnabled = true
+                        binding.buttonPrescribe.text = "Prescribe"
+                    } catch (e: Exception) {
+                        Log.e("PrescribeMed", "Error resetting button: ${e.message}")
+                    }
+                }
             }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        prescribeJob?.cancel()
         _binding = null
     }
 }

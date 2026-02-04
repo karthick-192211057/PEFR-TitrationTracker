@@ -1,6 +1,7 @@
 package com.example.pefrtitrationtracker
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -25,6 +26,11 @@ class PrescriptionHistoryFragment : Fragment() {
     private var patientId: Int = -1
 
     private lateinit var adapter: PrescriptionHistoryAdapter
+
+    // Job management
+    private var fetchJob: kotlinx.coroutines.Job? = null
+    private var deleteJob: kotlinx.coroutines.Job? = null
+    private var isFetching = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,33 +76,44 @@ class PrescriptionHistoryFragment : Fragment() {
                     text = "Delete"
                     setOnClickListener {
                         dialog.dismiss()
-                        lifecycleScope.launch {
+                        deleteJob?.cancel()
+                        deleteJob = lifecycleScope.launch {
                             try {
+                                if (!isAdded || _binding == null) return@launch
+                                
                                 val del = RetrofitClient.apiService.deleteMedication(medId)
+                                
+                                if (!isAdded || _binding == null) return@launch
+                                
                                 if (del.isSuccessful) {
                                     fetchHistory()
                                 } else {
-                                    val err = try { del.errorBody()?.string() ?: "" } catch (_: Exception) { "" }
-                                    if (del.code() == 400 && err.contains("Please update", ignoreCase = true)) {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "Please update medication status before deleting",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } else {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "Delete failed: ${del.code()}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                    if (isAdded && _binding != null) {
+                                        val err = try { del.errorBody()?.string() ?: "" } catch (_: Exception) { "" }
+                                        if (del.code() == 400 && err.contains("Please update", ignoreCase = true)) {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Please update medication status before deleting",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        } else {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Delete failed: ${del.code()}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     }
                                 }
                             } catch (e: Exception) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Error: ${e.message}",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Log.e("PrescriptionHistory", "Delete error: ${e.message}")
+                                if (isAdded && _binding != null) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Error: ${e.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
                             }
                         }
                     }
@@ -114,38 +131,79 @@ class PrescriptionHistoryFragment : Fragment() {
     }
 
     private fun fetchHistory() {
-        binding.progressBarHistory.isVisible = true
-        binding.recyclerViewPrescriptionHistory.isVisible = false
-        binding.textNoHistory.isVisible = false
+        if (isFetching) return
+        isFetching = true
+        fetchJob?.cancel()
+        
+        try {
+            binding.progressBarHistory.isVisible = true
+            binding.recyclerViewPrescriptionHistory.isVisible = false
+            binding.textNoHistory.isVisible = false
+        } catch (e: Exception) {
+            Log.e("PrescriptionHistory", "UI setup error: ${e.message}")
+            isFetching = false
+            return
+        }
 
-        lifecycleScope.launch {
+        fetchJob = lifecycleScope.launch {
             try {
+                if (!isAdded || _binding == null) {
+                    isFetching = false
+                    return@launch
+                }
+                
                 val response = RetrofitClient.apiService.getMedicationHistory(patientId)
 
+                if (!isAdded || _binding == null) {
+                    isFetching = false
+                    return@launch
+                }
+                
                 if (response.isSuccessful && response.body() != null) {
-                    val list = response.body()!!
+                    try {
+                        val list = response.body()!!
 
-                    if (list.isNotEmpty()) {
-                        adapter.update(list)
-                        binding.recyclerViewPrescriptionHistory.isVisible = true
-                    } else {
-                        binding.textNoHistory.isVisible = true
+                        if (list.isNotEmpty()) {
+                            adapter.update(list)
+                            binding.recyclerViewPrescriptionHistory.isVisible = true
+                        } else {
+                            binding.textNoHistory.isVisible = true
+                        }
+                    } catch (e: Exception) {
+                        Log.e("PrescriptionHistory", "UI update error: ${e.message}")
+                        if (isAdded && _binding != null) {
+                            binding.textNoHistory.isVisible = true
+                        }
                     }
 
                 } else {
-                    binding.textNoHistory.isVisible = true
+                    if (isAdded && _binding != null) {
+                        binding.textNoHistory.isVisible = true
+                    }
                 }
 
             } catch (e: Exception) {
-                binding.textNoHistory.isVisible = true
+                Log.e("PrescriptionHistory", "Fetch error: ${e.message}")
+                if (isAdded && _binding != null) {
+                    binding.textNoHistory.isVisible = true
+                }
             } finally {
-                binding.progressBarHistory.isVisible = false
+                isFetching = false
+                if (isAdded && _binding != null) {
+                    try {
+                        binding.progressBarHistory.isVisible = false
+                    } catch (e: Exception) {
+                        Log.e("PrescriptionHistory", "Error hiding progress: ${e.message}")
+                    }
+                }
             }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        fetchJob?.cancel()
+        deleteJob?.cancel()
         _binding = null
     }
 }

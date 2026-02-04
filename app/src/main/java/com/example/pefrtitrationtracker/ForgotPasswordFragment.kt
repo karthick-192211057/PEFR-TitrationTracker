@@ -67,27 +67,11 @@ class ForgotPasswordFragment : Fragment() {
                         findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToResetPasswordFragment(email))
                     } else {
                         val err = try { resp.errorBody()?.string() } catch (_: Exception) { null }
-                        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                            .setTitle("Failed to send OTP")
-                            .setMessage("Failed to send OTP: ${err ?: resp.code()}. If you received the code (check logs), you can enter it below.")
-                            .setPositiveButton("Retry") { _, _ -> binding.buttonSubmit.performClick() }
-                            .setNeutralButton("Enter OTP") { _, _ ->
-                                findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToResetPasswordFragment(email))
-                            }
-                            .setNegativeButton("Cancel", null)
-                            .show()
+                        android.widget.Toast.makeText(requireContext(), "Invalid email id or not registered", android.widget.Toast.LENGTH_LONG).show()
                     }
                 } catch (e: Exception) {
-                    // Network/timeout — allow user to proceed to enter OTP manually (helpful when server prints OTP to logs)
-                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                        .setTitle("Network error")
-                        .setMessage("Network error: ${e.message}. If you received the 6-digit OTP (e.g., from server logs), you can enter it to reset your password.")
-                        .setPositiveButton("Retry") { _, _ -> binding.buttonSubmit.performClick() }
-                        .setNeutralButton("Enter OTP") { _, _ ->
-                            findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToResetPasswordFragment(email))
-                        }
-                        .setNegativeButton("Cancel", null)
-                        .show()
+                    // Network/timeout error
+                    android.widget.Toast.makeText(requireContext(), "Network error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
                 } finally {
                     binding.buttonSubmit.isEnabled = true
                     binding.buttonSubmit.text = orig

@@ -40,9 +40,23 @@ class HomeDashboardFragment : Fragment() {
     // Keep references to running jobs so we can cancel them when view is destroyed
     private var dashboardJob: Job? = null
     private var chartJob: Job? = null
+    
+    // Navigation throttling to prevent rapid clicks
+    private var lastNavigationTime = 0L
+    private val NAVIGATION_THROTTLE_MS = 1000L
 
     private fun safeBinding(action: (FragmentHomeDashboardBinding) -> Unit) {
         if (_binding != null && isAdded) action(binding)
+    }
+    
+    private fun canNavigate(): Boolean {
+        val now = System.currentTimeMillis()
+        return if (now - lastNavigationTime >= NAVIGATION_THROTTLE_MS) {
+            lastNavigationTime = now
+            true
+        } else {
+            false
+        }
     }
 
     override fun onCreateView(
@@ -79,20 +93,33 @@ class HomeDashboardFragment : Fragment() {
             try { Glide.with(this).load(R.drawable.ic_person).centerCrop().into(binding.imageProfile) } catch (_: Exception) {}
         }
 
-        binding.imageProfile.safeClick { findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToProfileFragment()) }
+        binding.imageProfile.safeClick { 
+            if (canNavigate()) findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToProfileFragment()) 
+        }
         // Use safeClick to prevent multiple rapid navigations/crashes
-        binding.buttonRecordPEFR.safeClick { findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToPEFRInputFragment()) }
-        binding.buttonSetReminder.safeClick { findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToNotificationFragment()) }
-        binding.cardGraph.safeClick { findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToGraphFragment()) }
-        binding.cardTodayZone.safeClick { findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToTreatmentPlanFragment()) }
+        binding.buttonRecordPEFR.safeClick { 
+            if (canNavigate()) findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToPEFRInputFragment()) 
+        }
+        binding.buttonSetReminder.safeClick { 
+            if (canNavigate()) findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToNotificationFragment()) 
+        }
+        binding.cardGraph.safeClick { 
+            if (canNavigate()) findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToGraphFragment()) 
+        }
+        binding.cardTodayZone.safeClick { 
+            if (canNavigate()) findNavController().navigate(HomeDashboardFragmentDirections.actionHomeDashboardFragmentToTreatmentPlanFragment()) 
+        }
         binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) fetchChartData(isWeekly = checkedId == R.id.buttonWeekly)
+            if (isChecked && !isChartLoading) fetchChartData(isWeekly = checkedId == R.id.buttonWeekly)
         }
     }
 
     private fun fetchDashboardData() {
         if (isDashboardLoading) return
         isDashboardLoading = true
+
+        // Cancel previous job if still running
+        dashboardJob?.cancel()
 
         safeBinding {
             it.progressBar.isVisible = true
@@ -102,35 +129,64 @@ class HomeDashboardFragment : Fragment() {
 
         dashboardJob = viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = RetrofitClient.apiService.getMyProfile()
-                if (!isAdded || _binding == null) return@launch
+                // Check if fragment is still valid
+                if (!isAdded || _binding == null) {
+                    isDashboardLoading = false
+                    return@launch
+                }
+
+                val response = try {
+                    RetrofitClient.apiService.getMyProfile()
+                } catch (e: Exception) {
+                    Log.e("Dashboard", "Network error: ${e.message}")
+                    safeBinding {
+                        it.progressBar.isVisible = false
+                        it.textViewError.setText(R.string.error_network)
+                        it.textViewError.isVisible = true
+                    }
+                    isDashboardLoading = false
+                    return@launch
+                }
+
+                // Check again after network call
+                if (!isAdded || _binding == null) {
+                    isDashboardLoading = false
+                    return@launch
+                }
 
                 safeBinding { it.progressBar.isVisible = false }
 
                 if (response.isSuccessful) {
                     response.body()?.let { user ->
-                        safeBinding {
-                            it.contentScrollView.isVisible = true
-                            updateUI(user)
+                        if (isAdded && _binding != null) {
+                            safeBinding {
+                                it.contentScrollView.isVisible = true
+                                updateUI(user)
+                            }
                         }
-                    } ?: safeBinding {
-                        it.textViewError.setText(R.string.error_profile_not_retrieved)
-                        it.textViewError.isVisible = true
+                    } ?: run {
+                        safeBinding {
+                            it.textViewError.setText(R.string.error_profile_not_retrieved)
+                            it.textViewError.isVisible = true
+                        }
                     }
                 } else {
                     safeBinding {
-                        it.textViewError.text = response.message()
+                        it.textViewError.text = "Error: ${response.message()}"
                         it.textViewError.isVisible = true
                     }
                 }
             } catch (e: Exception) {
-                if (!isAdded || _binding == null) return@launch
+                if (!isAdded || _binding == null) {
+                    isDashboardLoading = false
+                    return@launch
+                }
+                Log.e("Dashboard", "Error: ${e.message}", e)
                 safeBinding {
                     it.progressBar.isVisible = false
                     it.textViewError.setText(R.string.error_network)
                     it.textViewError.isVisible = true
                 }
-                Log.e("Dashboard", "Error: ${e.message}")
             } finally {
                 isDashboardLoading = false
             }
@@ -202,15 +258,57 @@ class HomeDashboardFragment : Fragment() {
         if (isChartLoading) return
         isChartLoading = true
 
+        // Cancel previous chart job if still running
+        chartJob?.cancel()
+
         chartJob = viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = RetrofitClient.apiService.getMyPefrRecords()
-                if (!isAdded || _binding == null) return@launch
+                // Check if fragment is still valid
+                if (!isAdded || _binding == null) {
+                    isChartLoading = false
+                    return@launch
+                }
+
+                val response = try {
+                    RetrofitClient.apiService.getMyPefrRecords()
+                } catch (e: Exception) {
+                    Log.e("Chart", "Network error: ${e.message}")
+                    isChartLoading = false
+                    return@launch
+                }
+
+                // Check again after network call
+                if (!isAdded || _binding == null) {
+                    isChartLoading = false
+                    return@launch
+                }
 
                 if (response.isSuccessful) {
                     val records = response.body() ?: emptyList()
-                    val entries = (if (isWeekly) records.takeLast(7) else records.takeLast(30))
+                    
+                    // Filter records by date range
+                    val calendar = Calendar.getInstance()
+                    if (isWeekly) {
+                        calendar.add(Calendar.DAY_OF_MONTH, -7)
+                    } else {
+                        calendar.add(Calendar.DAY_OF_MONTH, -30)
+                    }
+                    val cutoffDate = calendar.time
+                    
+                    val filteredRecords = records.filter { record ->
+                        val recordDate = parseDate(record.recordedAt)
+                        recordDate.after(cutoffDate)
+                    }
+                    
+                    val entries = filteredRecords
+                        .sortedBy { parseDate(it.recordedAt) }
                         .mapIndexed { i, r -> Entry(i.toFloat(), r.pefrValue.toFloat()) }
+
+                    // Final check before updating UI
+                    if (!isAdded || _binding == null) {
+                        isChartLoading = false
+                        return@launch
+                    }
 
                     safeBinding {
                         if (entries.isNotEmpty()) {
@@ -221,14 +319,27 @@ class HomeDashboardFragment : Fragment() {
                             )
                             styleDataSet(dataSet)
                             it.lineChart.data = LineData(dataSet)
+                            it.lineChart.isVisible = true
+                            it.noDataText.isVisible = false
                         } else {
                             it.lineChart.clear()
+                            it.lineChart.isVisible = false
+                            val noDataMsg = if (isWeekly) 
+                                getString(R.string.no_pefr_records_last_7_days)
+                            else 
+                                getString(R.string.no_pefr_records_last_30_days)
+                            it.noDataText.text = noDataMsg
+                            it.noDataText.isVisible = true
                         }
                         it.lineChart.invalidate()
                     }
                 }
             } catch (e: Exception) {
-                Log.e("Chart", "Error: ${e.message}")
+                if (!isAdded || _binding == null) {
+                    isChartLoading = false
+                    return@launch
+                }
+                Log.e("Chart", "Error: ${e.message}", e)
             }
             finally {
                 isChartLoading = false
@@ -286,6 +397,18 @@ class HomeDashboardFragment : Fragment() {
             SimpleDateFormat(outputPattern, Locale.getDefault()).format(date!!)
         } catch (e: Exception) {
             getString(R.string.just_now)
+        }
+    }
+
+    private fun parseDate(dateString: String?): Date {
+        if (dateString == null) return Date()
+        return try {
+            // Parse server timestamp as UTC
+            val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            input.timeZone = TimeZone.getTimeZone("UTC")
+            input.parse(dateString) ?: Date()
+        } catch (e: Exception) {
+            Date()
         }
     }
 

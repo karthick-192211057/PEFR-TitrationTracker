@@ -92,6 +92,38 @@ class SessionManager(context: Context) {
         prefs.edit().remove(medKey(medId)).apply()
     }
 
+    // ---------------- MEDICATION CREATED TIME (local cache)
+    private fun medCreatedKey(medId: Int) = "med_created_time_$medId"
+
+    fun saveMedicationCreatedTime(medId: Int, timeMillis: Long) {
+        prefs.edit().putLong(medCreatedKey(medId), timeMillis).apply()
+    }
+
+    fun fetchMedicationCreatedTime(medId: Int): Long? {
+        val v = prefs.getLong(medCreatedKey(medId), -1L)
+        return if (v <= 0L) null else v
+    }
+
+    fun clearMedicationCreatedTime(medId: Int) {
+        prefs.edit().remove(medCreatedKey(medId)).apply()
+    }
+
+    // ---------------- MEDICATION STATUS TIME (local cache)
+    private fun medStatusKey(medId: Int) = "med_status_time_$medId"
+
+    fun saveMedicationStatusTime(medId: Int, timeMillis: Long) {
+        prefs.edit().putLong(medStatusKey(medId), timeMillis).apply()
+    }
+
+    fun fetchMedicationStatusTime(medId: Int): Long? {
+        val v = prefs.getLong(medStatusKey(medId), -1L)
+        return if (v <= 0L) null else v
+    }
+
+    fun clearMedicationStatusTime(medId: Int) {
+        prefs.edit().remove(medStatusKey(medId)).apply()
+    }
+
     // ---------------- NOTIFICATIONS HELPERS ----------------
     fun addNotification(message: String) {
         val current = prefs.getStringSet(KEY_NOTIFICATIONS, emptySet())?.toMutableSet() ?: mutableSetOf()

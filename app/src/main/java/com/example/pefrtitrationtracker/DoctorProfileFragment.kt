@@ -106,10 +106,10 @@ class DoctorProfileFragment : Fragment() {
 
                     // Update UI dynamically
                     binding.textDoctorName.text = "Dr. ${user.fullName ?: "-"}"
-                    binding.textEmail.text = "Email: ${user.email ?: "-"}"
-                    binding.textContact.text = "Contact: ${user.contactInfo ?: "-"}"
-                    binding.textAddress.text = "Address: ${user.address ?: "-"}"
-                    binding.textSpecialty.text = "Specialty: ${user.role ?: "-"}"
+                    binding.textEmail.text = user.email ?: "-"
+                    binding.textContact.text = user.contactInfo ?: "-"
+                    binding.textAddress.text = user.address ?: "-"
+                    binding.textSpecialty.text = user.role ?: "-"
 
                 } else {
                     Toast.makeText(context, "Failed to load profile", Toast.LENGTH_SHORT).show()
@@ -123,7 +123,7 @@ class DoctorProfileFragment : Fragment() {
     }
 
     private fun showDeleteAccountConfirmationDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_confirm_action, null)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_delete_account_confirmation, null)
 
         // Delete icon
         dialogView.findViewById<ImageView>(R.id.dialogIcon)
@@ -131,7 +131,10 @@ class DoctorProfileFragment : Fragment() {
 
         dialogView.findViewById<TextView>(R.id.dialogTitle).text = "Delete Account"
         dialogView.findViewById<TextView>(R.id.dialogMessage).text =
-            "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed."
+            "Your account and all associated data will be permanently deleted from our servers. This action cannot be undone."
+
+        val checkboxAcknowledge = dialogView.findViewById<android.widget.CheckBox>(R.id.checkboxAcknowledge)
+        val confirmButton = dialogView.findViewById<MaterialButton>(R.id.buttonConfirm)
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setView(dialogView)
@@ -140,17 +143,26 @@ class DoctorProfileFragment : Fragment() {
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
+        // Initially disable confirm button
+        confirmButton.isEnabled = false
+        confirmButton.alpha = 0.5f
+        
+        // Enable confirm button only when checkbox is ticked
+        checkboxAcknowledge.setOnCheckedChangeListener { _, isChecked ->
+            confirmButton.isEnabled = isChecked
+            confirmButton.alpha = if (isChecked) 1.0f else 0.5f
+        }
+
         dialogView.findViewById<MaterialButton>(R.id.buttonCancel)
             .setOnClickListener { dialog.dismiss() }
 
-        dialogView.findViewById<MaterialButton>(R.id.buttonConfirm)
-            .apply {
-                text = "Delete Account"
-                setOnClickListener {
-                    dialog.dismiss()
-                    deleteAccount()
-                }
+        confirmButton.apply {
+            text = "Delete Account"
+            setOnClickListener {
+                dialog.dismiss()
+                deleteAccount()
             }
+        }
 
         dialog.show()
     }

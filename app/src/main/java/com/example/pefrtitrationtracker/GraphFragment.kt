@@ -58,9 +58,20 @@ class GraphFragment : Fragment() {
         binding.recyclerViewSymptoms.adapter = SymptomAdapter(emptyList())
 
         // Guard rapid taps on View History
+        var lastNavigateTime = 0L
+        val NAVIGATE_THROTTLE = 1000L
         binding.buttonViewHistory.safeClick {
-            val action = GraphFragmentDirections.actionGraphFragmentToHistoryListFragment(patientId)
-            findNavController().navigate(action)
+            val now = System.currentTimeMillis()
+            if (now - lastNavigateTime >= NAVIGATE_THROTTLE) {
+                lastNavigateTime = now
+                try {
+                    val action = GraphFragmentDirections.actionGraphFragmentToHistoryListFragment(patientId)
+                    findNavController().navigate(action)
+                } catch (e: Exception) {
+                    Log.e("GraphFragment", "Navigation error: ${e.message}")
+                    android.widget.Toast.makeText(context, "Navigation error. Please try again.", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

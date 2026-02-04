@@ -17,6 +17,7 @@ import com.example.pefrtitrationtracker.adapter.HistoryItem
 import com.example.pefrtitrationtracker.databinding.FragmentHistoryListBinding
 import com.example.pefrtitrationtracker.network.RetrofitClient
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 class HistoryListFragment : Fragment() {
 
@@ -28,6 +29,10 @@ class HistoryListFragment : Fragment() {
     private var patientId: Int = -1
 
     private lateinit var historyAdapter: HistoryAdapter
+    
+    // Job management to prevent crashes when user navigates away during loading
+    private var fetchJob: Job? = null
+    private var isFetching = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +52,10 @@ class HistoryListFragment : Fragment() {
             (activity as? AppCompatActivity)?.supportActionBar?.title = "Patient History (ID: $patientId)"
         }
 
+        // Enable back button navigation - safe to click anytime
+        (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as? AppCompatActivity)?.supportActionBar?.setHomeButtonEnabled(true)
+
         setupRecyclerView()
         fetchHistoryData()
     }
@@ -60,70 +69,148 @@ class HistoryListFragment : Fragment() {
     }
 
     private fun fetchHistoryData() {
-        binding.progressBar.isVisible = true
-        binding.recyclerViewHistory.isVisible = false
-        binding.textNoHistory.isVisible = false
+        // Prevent concurrent fetch operations
+        if (isFetching) return
+        isFetching = true
+        
+        // Cancel previous fetch job if still running
+        fetchJob?.cancel()
 
-        lifecycleScope.launch {
-            val allHistoryItems = mutableListOf<HistoryItem>()
-            var fetchError = false
+        try {
+            binding.progressBar.isVisible = true
+            binding.recyclerViewHistory.isVisible = false
+            binding.textNoHistory.isVisible = false
+        } catch (e: Exception) {
+            Log.e("HistoryList", "UI setup error: ${e.message}")
+            isFetching = false
+            return
+        }
 
+        fetchJob = lifecycleScope.launch {
             try {
-                // --- 1. Fetch PEFR Data ---
-                val pefrResponse = if (patientId == -1) {
-                    RetrofitClient.apiService.getMyPefrRecords()
-                } else {
-                    RetrofitClient.apiService.getPatientPefrRecords(patientId)
+                // Check if fragment is still valid
+                if (!isAdded || _binding == null) {
+                    isFetching = false
+                    return@launch
                 }
 
-                if (pefrResponse.isSuccessful && pefrResponse.body() != null) {
-                    // Add all PEFR records to the list
-                    allHistoryItems.addAll(pefrResponse.body()!!.map { HistoryItem.Pefr(it) })
-                } else {
-                    fetchError = true
-                }
+                val allHistoryItems = mutableListOf<HistoryItem>()
+                var fetchError = false
 
-                // --- 2. Fetch Symptom Data ---
-                val symptomResponse = if (patientId == -1) {
-                    RetrofitClient.apiService.getMySymptomRecords()
-                } else {
-                    RetrofitClient.apiService.getPatientSymptomRecords(patientId)
-                }
+                try {
+                    // --- 1. Fetch PEFR Data ---
+                    val pefrResponse = try {
+                        if (patientId == -1) {
+                            RetrofitClient.apiService.getMyPefrRecords()
+                        } else {
+                            RetrofitClient.apiService.getPatientPefrRecords(patientId)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("HistoryList", "PEFR fetch error: ${e.message}")
+                        fetchError = true
+                        null
+                    }
 
-                if (symptomResponse.isSuccessful && symptomResponse.body() != null) {
-                    // Add all Symptom records to the list
-                    allHistoryItems.addAll(symptomResponse.body()!!.map { HistoryItem.Sym(it) })
-                } else {
-                    fetchError = true
-                }
+                    // Check if fragment is still valid after network call
+                    if (!isAdded || _binding == null) {
+                        isFetching = false
+                        return@launch
+                    }
 
-                // --- 3. Update UI ---
-                if (fetchError) {
-                    Toast.makeText(context, "Error fetching some history data", Toast.LENGTH_SHORT).show()
-                }
+                    if (pefrResponse?.isSuccessful == true && pefrResponse.body() != null) {
+                        // Add all PEFR records to the list
+                        allHistoryItems.addAll(pefrResponse.body()!!.map { HistoryItem.Pefr(it) })
+                    } else if (pefrResponse != null) {
+                        fetchError = true
+                    }
 
-                if (allHistoryItems.isEmpty()) {
-                    binding.emptyHistoryPlaceholder.isVisible = true
-                    binding.recyclerViewHistory.isVisible = false
-                } else {
-                    historyAdapter.updateData(allHistoryItems)
-                    binding.recyclerViewHistory.isVisible = true
-                    binding.emptyHistoryPlaceholder.isVisible = false
-                }
+                    // --- 2. Fetch Symptom Data ---
+                    val symptomResponse = try {
+                        if (patientId == -1) {
+                            RetrofitClient.apiService.getMySymptomRecords()
+                        } else {
+                            RetrofitClient.apiService.getPatientSymptomRecords(patientId)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("HistoryList", "Symptom fetch error: ${e.message}")
+                        fetchError = true
+                        null
+                    }
 
-            } catch (e: Exception) {
-                Log.e("HistoryList", "Network Exception: ${e.message}", e)
-                Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
-                binding.textNoHistory.text = "Network error"
-                binding.textNoHistory.isVisible = true
+                    // Check if fragment is still valid
+                    if (!isAdded || _binding == null) {
+                        isFetching = false
+                        return@launch
+                    }
+
+                    if (symptomResponse?.isSuccessful == true && symptomResponse.body() != null) {
+                        // Add all Symptom records to the list
+                        allHistoryItems.addAll(symptomResponse.body()!!.map { HistoryItem.Sym(it) })
+                    } else if (symptomResponse != null) {
+                        fetchError = true
+                    }
+
+                    // Final check before UI update
+                    if (!isAdded || _binding == null) {
+                        isFetching = false
+                        return@launch
+                    }
+
+                    // --- 3. Update UI ---
+                    try {
+                        if (fetchError && allHistoryItems.isNotEmpty()) {
+                            Toast.makeText(context, "Partial data loaded", Toast.LENGTH_SHORT).show()
+                        } else if (fetchError) {
+                            Toast.makeText(context, "Error fetching history data", Toast.LENGTH_SHORT).show()
+                        }
+
+                        if (allHistoryItems.isEmpty()) {
+                            binding.emptyHistoryPlaceholder.isVisible = true
+                            binding.recyclerViewHistory.isVisible = false
+                            binding.textNoHistory.isVisible = false
+                        } else {
+                            historyAdapter.updateData(allHistoryItems)
+                            binding.recyclerViewHistory.isVisible = true
+                            binding.emptyHistoryPlaceholder.isVisible = false
+                            binding.textNoHistory.isVisible = false
+                        }
+                    } catch (e: Exception) {
+                        Log.e("HistoryList", "UI update error: ${e.message}")
+                    }
+
+                } catch (e: Exception) {
+                    if (!isAdded || _binding == null) {
+                        isFetching = false
+                        return@launch
+                    }
+                    Log.e("HistoryList", "Fetch Exception: ${e.message}", e)
+                    try {
+                        Toast.makeText(context, "Error loading history", Toast.LENGTH_LONG).show()
+                        binding.textNoHistory.text = "Error loading data"
+                        binding.textNoHistory.isVisible = true
+                        binding.recyclerViewHistory.isVisible = false
+                        binding.emptyHistoryPlaceholder.isVisible = false
+                    } catch (uiError: Exception) {
+                        Log.e("HistoryList", "Error update failed: ${uiError.message}")
+                    }
+                } finally {
+                    try {
+                        binding.progressBar.isVisible = false
+                    } catch (e: Exception) {
+                        Log.e("HistoryList", "Progress bar error: ${e.message}")
+                    }
+                }
             } finally {
-                binding.progressBar.isVisible = false
+                isFetching = false
             }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Cancel any in-flight data loading operations when user navigates away
+        fetchJob?.cancel()
+        _binding = null
         _binding = null
     }
 }
