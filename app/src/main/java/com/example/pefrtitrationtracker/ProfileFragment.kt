@@ -313,6 +313,25 @@ class ProfileFragment : Fragment() {
                 binding.editTextName.error = null
             }
 
+            if (!contactOk && contactVal.isNotEmpty()) {
+                binding.editTextContact.error = "Enter valid mobile number"
+            } else {
+                binding.editTextContact.error = null
+            }
+
+            if (!addressOk && addressVal.isNotEmpty()) {
+                binding.editTextAddress.error = if (addressVal.length > 180) "Maximum 180 characters" else "Address required"
+            } else {
+                binding.editTextAddress.error = null
+            }
+
+            val tilGender = binding.autoCompleteGender.parent as? TextInputLayout
+            if (!genderOk && genderVal.isNotEmpty()) {
+                tilGender?.error = "Select a valid gender"
+            } else {
+                tilGender?.error = null
+            }
+
             if (!ageOk && !binding.editTextAge.text.isNullOrEmpty()) {
                 binding.editTextAge.error = "Enter valid age between 6-125"
             } else {
@@ -358,55 +377,78 @@ class ProfileFragment : Fragment() {
         val nameRegex = Regex("^[A-Za-z ]+$")
         if (nameVal.isEmpty() || !nameRegex.matches(nameVal) || nameVal.length > 30) {
             if (nameVal.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+                binding.editTextName.error = "Name is required"
             } else if (nameVal.length > 30) {
-                Toast.makeText(requireContext(), "Name must be maximum 30 characters", Toast.LENGTH_LONG).show()
+                binding.editTextName.error = "Name must be maximum 30 characters"
             } else {
-                Toast.makeText(requireContext(), "Name should only contain letters and spaces", Toast.LENGTH_LONG).show()
+                binding.editTextName.error = "Only letters and spaces allowed"
             }
+            binding.editTextName.requestFocus()
             return
         }
 
         // Contact: starts with 6-9 and exactly 10 digits
         val contactRegex = Regex("^[6-9][0-9]{9}$")
         if (contactVal.isEmpty() || !contactRegex.matches(contactVal)) {
-            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+            binding.editTextContact.error = "Enter valid mobile number"
+            binding.editTextContact.requestFocus()
             return
+        } else {
+            binding.editTextContact.error = null
         }
 
         // Address: max 180 chars
         if (addressVal.isEmpty() || addressVal.length > 180) {
-            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+            binding.editTextAddress.error = if (addressVal.isEmpty()) "Address is required" else "Address must be maximum 180 characters"
+            binding.editTextAddress.requestFocus()
             return
+        } else {
+            binding.editTextAddress.error = null
         }
 
         // Age: mandatory and must be 6-125
         if (ageVal == null || ageVal < 6 || ageVal > 125) {
-            Toast.makeText(requireContext(), "Enter valid age between 6-125", Toast.LENGTH_LONG).show()
+            binding.editTextAge.error = "Enter valid age between 6-125"
+            binding.editTextAge.requestFocus()
             return
+        } else {
+            binding.editTextAge.error = null
         }
 
         // Height cm: mandatory and must be 100-300
         if (heightVal == null || heightVal < 100 || heightVal > 300) {
-            Toast.makeText(requireContext(), "Enter valid height between 100-300 cm", Toast.LENGTH_LONG).show()
+            binding.editTextHeight.error = "Enter valid height between 100-300 cm"
+            binding.editTextHeight.requestFocus()
             return
+        } else {
+            binding.editTextHeight.error = null
         }
 
         // Gender: compulsory and must be male/female/prefer not to say (case-insensitive)
         if (genderVal.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+            val tilGender = binding.autoCompleteGender.parent as? TextInputLayout
+            tilGender?.error = "Please select gender"
+            binding.autoCompleteGender.requestFocus()
             return
         }
         val genderLower = genderVal.lowercase()
         if (genderLower !in listOf("male", "female", "prefer not to say")) {
-            Toast.makeText(requireContext(), "Gender must be Male, Female or Prefer Not to say", Toast.LENGTH_LONG).show()
+            val tilGender = binding.autoCompleteGender.parent as? TextInputLayout
+            tilGender?.error = "Gender must be Male, Female or Prefer Not to say"
+            binding.autoCompleteGender.requestFocus()
             return
+        } else {
+            val tilGender = binding.autoCompleteGender.parent as? TextInputLayout
+            tilGender?.error = null
         }
 
         // Baseline PEFR: optional, but if provided must be 55 - 999
         if (baselineVal != null && (baselineVal < 55 || baselineVal > 999)) {
-            Toast.makeText(requireContext(), "Baseline PEFR must be between 55 and 999", Toast.LENGTH_LONG).show()
+            binding.editTextBaselinePEFR.error = "Baseline PEFR must be between 55 and 999"
+            binding.editTextBaselinePEFR.requestFocus()
             return
+        } else {
+            binding.editTextBaselinePEFR.error = null
         }
 
         val request = ProfileUpdateRequest(
