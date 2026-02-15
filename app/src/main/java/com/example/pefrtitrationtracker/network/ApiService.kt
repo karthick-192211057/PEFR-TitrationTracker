@@ -156,7 +156,7 @@ interface ApiService {
         @Query("zone") zone: String?
     ): Response<List<User>>
 
-    @POST("/patient/link-doctor")
+    @POST("patient/link-doctor")
     suspend fun linkDoctor(@Body linkRequest: DoctorPatientLinkRequest): Response<DoctorPatientLink>
 
     @GET("/patient/doctor")

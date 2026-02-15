@@ -20,6 +20,9 @@ class SessionManager(context: Context) {
     // Per-user email key
     private val KEY_USER_EMAIL = "user_email"
 
+    // remember last attempted doctor email so we can prepopulate dialogs
+    private val KEY_LAST_DOCTOR_EMAIL = "last_doctor_email"
+
     // ---------------- DELETED PATIENTS (persisted per-doctor)
     private val KEY_DELETED_PATIENTS = "deleted_patients"
 
@@ -193,6 +196,19 @@ class SessionManager(context: Context) {
     }
 
     // ---------------- CLEAR ALL ----------------
+    // ---------------- DOCTOR EMAIL (for sharing UI convenience)
+    fun saveLastDoctorEmail(email: String) {
+        prefs.edit().putString(KEY_LAST_DOCTOR_EMAIL, email).apply()
+    }
+
+    fun fetchLastDoctorEmail(): String? {
+        return prefs.getString(KEY_LAST_DOCTOR_EMAIL, null)
+    }
+
+    fun clearLastDoctorEmail() {
+        prefs.edit().remove(KEY_LAST_DOCTOR_EMAIL).apply()
+    }
+
     fun clearSession() {
         // Preserve the deleted patient list across logouts so doctor-hidden links remain hidden
         val deleted = fetchDeletedPatientIds()

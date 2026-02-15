@@ -352,6 +352,40 @@ class ProfileFragment : Fragment() {
     // SAVE PROFILE + BASELINE
     // ------------------------------------------------
     private fun showSaveChangesConfirmationDialog() {
+        // Validate all fields before showing confirmation dialog
+        val nameVal = binding.editTextName.text.toString().trim()
+        val contactVal = binding.editTextContact.text.toString().trim()
+        val addressVal = binding.editTextAddress.text.toString().trim()
+        val ageVal = binding.editTextAge.text.toString().toIntOrNull()
+        val heightVal = binding.editTextHeight.text.toString().toIntOrNull()
+        val genderVal = binding.autoCompleteGender.text.toString().trim()
+        
+        // Check for empty required fields
+        if (nameVal.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill Full Name", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (contactVal.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill Contact Number", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (addressVal.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill Address", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (ageVal == null) {
+            Toast.makeText(requireContext(), "Please fill Age", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (heightVal == null) {
+            Toast.makeText(requireContext(), "Please fill Height", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (genderVal.isEmpty()) {
+            Toast.makeText(requireContext(), "Please select Gender", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
         AlertDialog.Builder(requireContext())
             .setTitle("Save Changes")
             .setMessage("Are you sure you want to save these changes?")

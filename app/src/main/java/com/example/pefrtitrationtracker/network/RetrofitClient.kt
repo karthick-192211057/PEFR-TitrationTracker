@@ -10,7 +10,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "https://sheron-overplenteous-nonusurpingly.ngrok-free.dev/"
+    //private const val BASE_URL = "https://sheron-overplenteous-nonusurpingly.ngrok-free.dev/"
+    private const val BASE_URL = "http://10.69.7.138:8000/"
+    //private const val BASE_URL = "http://192.168.0.165:8000"
 
     private val authInterceptor by lazy {
         Interceptor { chain ->
@@ -27,7 +29,11 @@ object RetrofitClient {
 
             // --- REQUIRED FOR PATCH + JSON BODY ---
             requestBuilder.addHeader("Accept", "application/json")
-            requestBuilder.addHeader("Content-Type", "application/json")
+            if (!token.isNullOrBlank()) {
+                requestBuilder.addHeader("Authorization", "Bearer $token")
+            }
+
+            requestBuilder.addHeader("Accept", "application/json")
 
             chain.proceed(requestBuilder.build())
         }

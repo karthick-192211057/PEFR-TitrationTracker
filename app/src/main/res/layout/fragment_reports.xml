@@ -79,6 +79,18 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <!-- doctor info shown when linked -->
+            <TextView
+                android:id="@+id/textDoctorInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Linked doctor: –"
+                android:textColor="@color/fieldTextColor"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:maxLines="2"
+                android:layout_marginBottom="8dp" />
+
             <TextView
                 android:id="@+id/labelRealTimeSharing"
                 android:layout_width="match_parent"

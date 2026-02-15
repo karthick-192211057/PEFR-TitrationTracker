@@ -22,6 +22,7 @@ import com.example.pefrtitrationtracker.network.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,6 +32,13 @@ class ReportsFragment : Fragment() {
 
     private var _binding: FragmentReportsBinding? = null
     private val binding get() = _binding!!
+
+    // helper to safely access binding only when view exists
+    private fun <T> safeBinding(action: (FragmentReportsBinding) -> T): T? {
+        return if (_binding != null && isAdded) {
+            action(binding)
+        } else null
+    }
 
     private val args: ReportsFragmentArgs by navArgs()
     private var patientId: Int = -1
@@ -103,6 +111,7 @@ class ReportsFragment : Fragment() {
                 val email = session.fetchUserEmail()
                 binding.toggleSharing.isChecked = if (email != null) session.fetchSharingEnabledFor(email) else session.fetchSharingEnabled()
                 setupSharingToggle()
+                fetchDoctorInfo()   // load any already-linked doctor for display
             } else {
                 binding.toggleSharing.isEnabled = false
                 binding.labelRealTimeSharing.text = "Sharing managed by patient"
@@ -194,16 +203,97 @@ class ReportsFragment : Fragment() {
         val session = com.example.pefrtitrationtracker.network.SessionManager(requireContext())
         val email = session.fetchUserEmail()
         binding.toggleSharing.setOnCheckedChangeListener { _, checked ->
+            // persist toggle state per-user if possible
             if (email != null) session.saveSharingEnabledFor(email, checked) else session.saveSharingEnabled(checked)
-            if (checked) showDoctorDialog() else Toast.makeText(requireContext(), "Sharing Disabled", Toast.LENGTH_SHORT).show()
+            if (checked) {
+                // when enabling, first check if a doctor is already linked
+                checkExistingDoctorBeforeLinking()
+            } else {
+                Toast.makeText(requireContext(), "Sharing Disabled", Toast.LENGTH_SHORT).show()
+                // hiding doctor info makes sense when disabled?
+                updateDoctorInfo(null)
+            }
         }
     }
 
-    private fun showDoctorDialog() {
+    private fun updateDoctorInfo(doctor: User?) {
+        // build a formatted string with additional contact if available
+        val infoText = if (doctor != null) {
+            val namePart = "Dr. ${doctor.fullName ?: doctor.email}"
+            val contactPart = doctor.contactInfo?.takeIf { it.isNotBlank() }?.let { "\nContact: $it" } ?: ""
+            "Linked doctor: $namePart$contactPart"
+        } else null
+
+        safeBinding { b ->
+            if (infoText != null) {
+                b.textDoctorInfo.text = infoText
+                b.textDoctorInfo.visibility = View.VISIBLE
+            } else {
+                b.textDoctorInfo.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun fetchDoctorInfo() {
+        lifecycleScope.launch {
+            try {
+                val resp = withContext(Dispatchers.IO) { RetrofitClient.apiService.getLinkedDoctor() }
+                if (resp.isSuccessful) {
+                    updateDoctorInfo(resp.body())
+                } else {
+                    updateDoctorInfo(null)
+                }
+            } catch (_: Exception) {
+                updateDoctorInfo(null)
+            }
+        }
+    }
+
+    /**
+     * If the patient already has a linked doctor, inform them instead of prompting
+     * for an email. Otherwise show the dialog to enter the doctor's address.
+     */
+    private fun checkExistingDoctorBeforeLinking() {
+        linkDoctorJob?.cancel()
+        linkDoctorJob = lifecycleScope.launch {
+            try {
+                val resp = withContext(Dispatchers.IO) { RetrofitClient.apiService.getLinkedDoctor() }
+                if (resp.isSuccessful && resp.body() != null) {
+                    // Already linked – notify user and leave toggle checked
+                    val doc = resp.body()!!
+                    updateDoctorInfo(doc)
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Doctor Already Linked")
+                        .setMessage("You are already linked with Dr. ${doc.fullName ?: doc.email}.")
+                        .setPositiveButton("OK", null)
+                        .show()
+                } else {
+                    // no existing link, proceed to ask (prefill previous email if any)
+                    val prev = SessionManager(requireContext()).fetchLastDoctorEmail()
+                    showDoctorDialog(prev)
+                }
+            } catch (e: Exception) {
+                // network error; still prompt so user can try linking
+                val prev = SessionManager(requireContext()).fetchLastDoctorEmail()
+                showDoctorDialog(prev)
+            }
+        }
+    }
+
+    /**
+     * Show a dialog prompting the user for their doctor's email.  If an
+     * email was previously entered we pre‑fill the field so the user only
+     * has to correct it (useful when they mistyped earlier).
+     */
+    private fun showDoctorDialog(initialEmail: String? = null) {
         val input = EditText(requireContext())
         input.hint = "doctor@email.com"
         input.imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_DONE
         input.setSingleLine(true)
+        if (!initialEmail.isNullOrBlank()) {
+            input.setText(initialEmail)
+            input.setSelection(initialEmail.length)
+        }
         input.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
                 val email = input.text.toString().trim()
@@ -225,8 +315,17 @@ class ReportsFragment : Fragment() {
             .setView(box)
             .setPositiveButton("Link") { _, _ ->
                 val email = input.text.toString().trim()
-                if (email.isNotEmpty()) linkToDoctor(email)
-                else binding.toggleSharing.isChecked = false
+                if (email.isNotEmpty()) {
+                    if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        linkToDoctor(email)
+                    } else {
+                        Toast.makeText(requireContext(), "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                        binding.toggleSharing.isChecked = false
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Please enter doctor's email", Toast.LENGTH_SHORT).show()
+                    binding.toggleSharing.isChecked = false
+                }
             }
             .setNegativeButton("Cancel") { d, _ ->
                 binding.toggleSharing.isChecked = false
@@ -248,14 +347,34 @@ class ReportsFragment : Fragment() {
 
                 if (!isAdded || _binding == null) return@launch
                 
-                if (response.isSuccessful)
+                if (response.isSuccessful) {
                     Toast.makeText(requireContext(), "Linked!", Toast.LENGTH_LONG).show()
-                else
-                    Toast.makeText(requireContext(), "Failed to link", Toast.LENGTH_LONG).show()
+                    // remember for prefill and update UI
+                    val session = SessionManager(requireContext())
+                    session.saveLastDoctorEmail(email)
+                    fetchDoctorInfo()
+                } else {
+                    // Show detailed error message from backend
+                    val errorMessage = try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+                            val jsonError = JSONObject(errorBody)
+                            jsonError.optString("detail", "Failed to link")
+                        } else {
+                            "Failed to link: ${response.code()}"
+                        }
+                    } catch (e: Exception) {
+                        "Failed to link: ${response.message()}"
+                    }
+                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+                    Log.e("Reports", "Link doctor error: $errorMessage")
+                    // since the backend didn't create a link, reset toggle state
+                    binding.toggleSharing.isChecked = false
+                }
             } catch (e: Exception) {
                 Log.e("Reports", "Link doctor error: ${e.message}")
                 if (isAdded && _binding != null) {
-                    Toast.makeText(requireContext(), "Failed to link", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }

@@ -25,6 +25,15 @@ class ResetPasswordFragment : Fragment() {
     private val binding get() = _binding!!
     private val args: ResetPasswordFragmentArgs by navArgs()
 
+    // OTP timer fields lifted to class scope so we can cancel from lifecycle callbacks
+    private var countdown: CountDownTimer? = null
+    private val OTP_TIMEOUT_MS: Long = 2 * 60 * 1000 // 2 minutes
+
+    private fun cancelTimer() {
+        countdown?.cancel()
+        countdown = null
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,9 +58,7 @@ class ResetPasswordFragment : Fragment() {
         val email = args.email
         binding.textEmail.text = email
 
-        // OTP timer
-        val OTP_TIMEOUT_MS: Long = 2 * 60 * 1000 // 2 minutes
-        var countdown: CountDownTimer? = null
+        // OTP timer (uses class-scope countdown/timeout)
 
         binding.editTextOtp.filters = arrayOf(InputFilter.LengthFilter(6))
         binding.editTextOtp.inputType = android.text.InputType.TYPE_CLASS_NUMBER
@@ -169,28 +176,33 @@ class ResetPasswordFragment : Fragment() {
                         val resp = RetrofitClient.apiService.verifyForgotOtp(email, otp)
                         if (resp.isSuccessful) {
                             otpVerified = true
-                            binding.textInputPassword.visibility = View.VISIBLE
-                            binding.textInputConfirmPassword.visibility = View.VISIBLE
-                            android.widget.Toast.makeText(requireContext(), "OTP verified. Enter a new password.", android.widget.Toast.LENGTH_SHORT).show()
-                            // focus password input and show keyboard to help the user
-                            binding.editTextPassword.requestFocus()
-                            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+                            // only update UI if fragment still has a view
+                            if (isAdded && _binding != null) {
+                                binding.textInputPassword.visibility = View.VISIBLE
+                                binding.textInputConfirmPassword.visibility = View.VISIBLE
+                                android.widget.Toast.makeText(requireContext(), "OTP verified. Enter a new password.", android.widget.Toast.LENGTH_SHORT).show()
+                                // focus password input and show keyboard to help the user
+                                binding.editTextPassword.requestFocus()
+                                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+                            }
                         } else {
                             val body = try { resp.errorBody()?.string() } catch (_: Exception) { null }
                             if (body?.contains("expired", true) == true) {
-                                android.widget.Toast.makeText(requireContext(), "OTP expired. Please resend.", android.widget.Toast.LENGTH_LONG).show()
-                                binding.buttonResend.isEnabled = true
+                                if (isAdded) android.widget.Toast.makeText(requireContext(), "OTP expired. Please resend.", android.widget.Toast.LENGTH_LONG).show()
+                                if (isAdded && _binding != null) binding.buttonResend.isEnabled = true
                             } else {
-                                android.widget.Toast.makeText(requireContext(), "Invalid OTP.", android.widget.Toast.LENGTH_LONG).show()
+                                if (isAdded) android.widget.Toast.makeText(requireContext(), "Invalid OTP.", android.widget.Toast.LENGTH_LONG).show()
                             }
                         }
                     } catch (e: Exception) {
-                        android.widget.Toast.makeText(requireContext(), "Network error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                        if (isAdded) android.widget.Toast.makeText(requireContext(), "Network error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
                     } finally {
-                        binding.buttonSubmit.isEnabled = true
-                        binding.buttonSubmit.text = orig
-                        checkEnableSubmit()
+                        if (isAdded && _binding != null) {
+                            binding.buttonSubmit.isEnabled = true
+                            binding.buttonSubmit.text = orig
+                            checkEnableSubmit()
+                        }
                     }
                 }
                 return@setOnClickListener
@@ -218,22 +230,28 @@ class ResetPasswordFragment : Fragment() {
                 try {
                     val resp = RetrofitClient.apiService.resetPassword(email, otp, newPass)
                     if (resp.isSuccessful) {
-                        android.widget.Toast.makeText(requireContext(), "Password updated. Please login.", android.widget.Toast.LENGTH_LONG).show()
-                        findNavController().navigate(ResetPasswordFragmentDirections.actionResetPasswordFragmentToLoginFragment())
+                        cancelTimer()
+                        if (isAdded) android.widget.Toast.makeText(requireContext(), "Password updated. Please login.", android.widget.Toast.LENGTH_LONG).show()
+                        // navigate only if still attached
+                        if (isAdded && _binding != null) {
+                            findNavController().navigate(ResetPasswordFragmentDirections.actionResetPasswordFragmentToLoginFragment())
+                        }
                     } else {
                         val body = try { resp.errorBody()?.string() } catch (_: Exception) { null }
                         if (body?.contains("expired", true) == true) {
-                            android.widget.Toast.makeText(requireContext(), "OTP expired. Please resend.", android.widget.Toast.LENGTH_LONG).show()
-                            binding.buttonResend.isEnabled = true
+                            if (isAdded) android.widget.Toast.makeText(requireContext(), "OTP expired. Please resend.", android.widget.Toast.LENGTH_LONG).show()
+                            if (isAdded && _binding != null) binding.buttonResend.isEnabled = true
                         } else {
-                            android.widget.Toast.makeText(requireContext(), "Reset failed.", android.widget.Toast.LENGTH_LONG).show()
+                            if (isAdded) android.widget.Toast.makeText(requireContext(), "Reset failed.", android.widget.Toast.LENGTH_LONG).show()
                         }
                     }
                 } catch (e: Exception) {
-                    android.widget.Toast.makeText(requireContext(), "Network error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                    if (isAdded) android.widget.Toast.makeText(requireContext(), "Network error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
                 } finally {
-                    binding.buttonSubmit.isEnabled = true
-                    binding.buttonSubmit.text = orig
+                    if (isAdded && _binding != null) {
+                        binding.buttonSubmit.isEnabled = true
+                        binding.buttonSubmit.text = orig
+                    }
                 }
             }
         }
@@ -242,7 +260,7 @@ class ResetPasswordFragment : Fragment() {
         checkEnableSubmit()
 
         binding.buttonBack.setOnClickListener {
-            countdown?.cancel()
+            cancelTimer()
             findNavController().popBackStack()
         }
     }
@@ -261,6 +279,8 @@ class ResetPasswordFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // ensure timer can't fire after view destroyed
+        cancelTimer()
         // Restore bottom navigation and drawer
         try {
             val bottom = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(com.example.pefrtitrationtracker.R.id.bottom_navigation)

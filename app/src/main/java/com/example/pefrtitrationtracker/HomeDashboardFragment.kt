@@ -41,6 +41,9 @@ class HomeDashboardFragment : Fragment() {
     private var dashboardJob: Job? = null
     private var chartJob: Job? = null
     
+    // simple cache of the last fetched profile so we can show it immediately when returning
+    private var cachedUser: User? = null
+
     // Navigation throttling to prevent rapid clicks
     private var lastNavigationTime = 0L
     private val NAVIGATION_THROTTLE_MS = 1000L
@@ -69,6 +72,9 @@ class HomeDashboardFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // if we already have cached data show it right away so user doesn't
+        // briefly see the loading placeholder again
+        cachedUser?.let { updateUI(it) }
         fetchDashboardData()
     }
 
@@ -121,10 +127,17 @@ class HomeDashboardFragment : Fragment() {
         // Cancel previous job if still running
         dashboardJob?.cancel()
 
-        safeBinding {
-            it.progressBar.isVisible = true
-            it.textViewError.isVisible = false
-            it.contentScrollView.isVisible = false
+        // only show the loading placeholder on the very first load;
+        // if we already have cachedUser then keep the UI visible and
+        // simply refresh in background
+        if (cachedUser == null) {
+            safeBinding {
+                it.progressBar.isVisible = true
+                it.textViewError.isVisible = false
+                it.contentScrollView.isVisible = false
+            }
+        } else {
+            safeBinding { it.progressBar.isVisible = true } // small spinner on top
         }
 
         dashboardJob = viewLifecycleOwner.lifecycleScope.launch {
@@ -158,6 +171,7 @@ class HomeDashboardFragment : Fragment() {
 
                 if (response.isSuccessful) {
                     response.body()?.let { user ->
+                        cachedUser = user
                         if (isAdded && _binding != null) {
                             safeBinding {
                                 it.contentScrollView.isVisible = true
@@ -194,6 +208,9 @@ class HomeDashboardFragment : Fragment() {
     }
 
     private fun updateUI(user: User) {
+        // remember for next time so we can show immediately
+        cachedUser = user
+
         safeBinding {
             it.textViewHeader.text = getString(R.string.welcome_message, user.fullName ?: "User")
         }

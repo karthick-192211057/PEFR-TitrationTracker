@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.util.Log
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         // =====================================================
 
         requestNotificationPermission()
+        // Request exact alarm permission if required (improves on-time reminders)
+        requestExactAlarmPermission()
         createNotificationChannel()
 
         setSupportActionBar(binding.toolbar)
@@ -206,6 +209,29 @@ class MainActivity : AppCompatActivity() {
                     arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
                     200
                 )
+            }
+        }
+    }
+
+    private fun requestExactAlarmPermission() {
+        // On Android 12+ the OS may require the user to grant exact alarm permission.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                val alarmManager = getSystemService(ALARM_SERVICE) as android.app.AlarmManager
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    // Launch system settings to request exact alarm scheduling permission
+                    try {
+                        // Use the action string to avoid compile-time dependency on newer SDK constants
+                        val intent = Intent("android.app.action.REQUEST_SCHEDULE_EXACT_ALARM")
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        Log.w("MainActivity", "Could not open exact alarm settings: ${e.message}")
+                    }
+                } else {
+                    Log.d("MainActivity", "Exact alarms already permitted")
+                }
+            } catch (t: Throwable) {
+                Log.w("MainActivity", "Error checking exact alarm permission: ${t.message}")
             }
         }
     }

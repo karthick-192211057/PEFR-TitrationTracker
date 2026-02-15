@@ -62,12 +62,35 @@ class ReminderScheduler(private val context: Context) {
         val pendingIntent = getPendingIntent(targetPefr)
         val triggerTime = cal.timeInMillis
 
-        Log.d(TAG, "Scheduling reminder for ${cal.time} (${triggerTime}) - Frequency: $frequency")
+        Log.d(TAG, "Scheduling reminder for ${cal.time} (${triggerTime}) - Frequency: $frequency | SDK=${android.os.Build.VERSION.SDK_INT}")
+
+        // If the trigger time is effectively now (within a small threshold), fire immediately
+        val now = System.currentTimeMillis()
+        val thresholdMs = 1500L // 1.5 seconds tolerance
+        if (triggerTime <= now + thresholdMs) {
+            Log.d(TAG, "Trigger time is immediate (within ${thresholdMs}ms). Firing reminder now.")
+            try {
+                val b = Intent(context, ReminderReceiver::class.java).apply { putExtra("target_pefr", targetPefr) }
+                context.sendBroadcast(b)
+            } catch (t: Throwable) {
+                Log.w(TAG, "Failed to broadcast immediate reminder: ${t.message}")
+            }
+            return
+        }
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                val canExact = alarmManager.canScheduleExactAlarms()
+                Log.d(TAG, "canScheduleExactAlarms() => $canExact")
+            }
+        } catch (t: Throwable) {
+            Log.w(TAG, "Could not query exact alarm capability: ${t.message}")
+        }
 
         try {
             when {
                 // Android 12+ (API 31+) - Use setAlarmClock for highest priority
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                    Log.d(TAG, "Using API31 exact alarm path (setAlarmClock)")
                     scheduleExactAlarmAPI31(alarmManager, triggerTime, pendingIntent)
                 }
                 // Android 6+ (API 23+) - Try exact alarm with fallback
@@ -91,7 +114,9 @@ class ReminderScheduler(private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun scheduleExactAlarmAPI31(alarmManager: AlarmManager, triggerTime: Long, pendingIntent: PendingIntent) {
-        if (alarmManager.canScheduleExactAlarms()) {
+        val canExact = try { alarmManager.canScheduleExactAlarms() } catch (t: Throwable) { false }
+        Log.d(TAG, "scheduleExactAlarmAPI31 - canScheduleExactAlarms: $canExact")
+        if (canExact) {
             // Use AlarmManager.setAlarmClock for highest priority delivery
             val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, null)
             alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
